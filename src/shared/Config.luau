@@ -9,6 +9,19 @@ Config.AI_PREFIX_VOICE = "AI says:" -- голос английский: Roblox T
 Config.Goals = { "survive", "reach_zone", "freeze", "collect", "hide", "push" } -- все 6 из дизайна
 -- все 7 угроз из дизайна
 Config.Threats = { "lava", "falling", "shrink", "chaser", "wind", "darkness", "gravity" }
+-- Подвохи (Services/Twists): бывают не каждый раунд. Имя → подпись в HUD и подсказка ИИ (англ.).
+Config.Twists = { "reverse", "tiny", "leader" }
+Config.TwistChance = 0.35
+Config.TwistNames = {
+	reverse = "управление наоборот",
+	tiny = "все крошечные",
+	leader = "охота на лидера",
+}
+Config.TwistHints = {
+	reverse = "controls are reversed",
+	tiny = "everyone is tiny",
+	leader = "a hunter chases only the leader",
+}
 Config.Arenas = { "school", "kitchen", "candy", "space" } -- темы в Services/Arena (THEMES)
 
 -- Нечестные или скучные пары цель+угроза (сервер не даст ИИ их собрать).

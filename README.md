@@ -36,9 +36,10 @@ src/
       AIHost.luau               запрос к Text Generation API → JSON → Round
       Goals.luau                цели: survive, reach_zone, freeze, collect, hide, push
       Threats.luau              угрозы: lava, falling, shrink, chaser, wind, darkness, gravity
+      Twists.luau               подвохи: reverse (управление наоборот), tiny, leader (охотник за лидером)
       ModelCache.luau           3D-модель из слова: WordBank (ассеты) или GenerationService + кэш в памяти
       Players.luau              кто жив, кто на трибунах (атрибут Alive)
-      Arena.luau                4 арены (school, kitchen, candy, space): общая сетка плиток + тема и декор
+      Arena.luau                4 арены (school, kitchen, candy, space): общая сетка 16×16 плиток + тема и декор
       WordService.luau          слово победителя: проверка, фильтр Roblox
       Remotes.luau              список всех RemoteEvent и их аргументов
     WordBank.luau               заранее запечённые слова: слово → assetId модели (делает tools/bake)
@@ -68,7 +69,9 @@ tools/bake/                     запекание слов в ассеты (Stu
 ### Как добавить…
 
 - **Угрозу:** функция `Threats.<name>(ctx) -> stop()` + имя в `Config.Threats` (+ в `Config.Incompatible`, если с какой-то целью нечестно).
-- **Цель:** функция `Goals.<name>(ctx) -> finish()` + имя в `Config.Goals` + фраза в `Config.FallbackLines`.
+- **Цель:** функция `Goals.<name>(ctx) -> finish()` + имя в `Config.Goals` + фразы в `Config.FallbackLines` и `Config.FallbackVoice`.
+- **Подвох:** функция `Twists.<name>(ctx) -> stop()` + имя в `Config.Twists` + `Config.TwistNames` (HUD) и `Config.TwistHints` (подсказка ИИ, англ.).
+- **Арену:** тема в `THEMES` в `Services/Arena.luau` + имя в `Config.Arenas`.
 - **Ловушку:** строка в `Config.TrapLines` (сейчас все ловушки — «прыгайте»).
 
 ## Проверки

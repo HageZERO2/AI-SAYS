@@ -105,6 +105,31 @@ local function setPush(on: boolean)
 	end
 end
 
+-- Подвох reverse: сервер ставит атрибут Reversed, а мы подменяем функцию, которой стандартный ControlModule
+-- применяет движение. (Второй Humanoid:Move за кадр не годится: проверено — вызовы складываются в ноль.)
+local controls: any = nil
+local originalMove: any = nil
+local function setReversed(on: boolean)
+	if not controls then
+		local ok, playerModule = pcall(function()
+			return require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule") :: ModuleScript) :: any
+		end)
+		controls = ok and playerModule:GetControls()
+		originalMove = controls and controls.moveFunction
+	end
+	if not controls or type(originalMove) ~= "function" then
+		return
+	end
+	controls.moveFunction = if on
+		then function(p: Player, vector: Vector3, cameraRelative: boolean)
+			originalMove(p, -vector, cameraRelative)
+		end
+		else originalMove
+end
+player:GetAttributeChangedSignal("Reversed"):Connect(function()
+	setReversed(player:GetAttribute("Reversed") == true)
+end)
+
 Remotes.State.OnClientEvent:Connect(function(s)
 	local fmt = PHASE[s.phase] or ""
 	local alive = player:GetAttribute("Alive")
@@ -113,6 +138,12 @@ Remotes.State.OnClientEvent:Connect(function(s)
 		me = `звёзды {player:GetAttribute("Collected") or 0}/{Config.CollectTarget}`
 	elseif s.goal == "push" and alive then
 		me = if player:GetAttribute("Pushed") then "столкнул ✓" else "толкай: E"
+	end
+	if player:GetAttribute("Hunted") then
+		me = "за тобой охотник!"
+	end
+	if s.twist and s.twist ~= "none" then
+		me ..= ` · подвох: {Config.TwistNames[s.twist]}`
 	end
 	setPush(s.phase == "round" and s.goal == "push" and alive == true)
 	info.Text =

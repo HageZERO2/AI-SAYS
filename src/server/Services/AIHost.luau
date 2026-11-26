@@ -50,6 +50,9 @@ function AIHost.buildRound(word: string): RoundLogic.Round
 		roll.threat,
 		roll.arena
 	)
+	if roll.twist ~= "none" then
+		prompt ..= ` Twist this round: {Config.TwistHints[roll.twist]} — mention it in the line.`
+	end
 	local ok, result
 	-- API в бете случайно отвечает HTTP 400 (тот же промпт через секунду проходит): повтор с паузой.
 	for attempt = 1, 3 do
@@ -68,7 +71,9 @@ function AIHost.buildRound(word: string): RoundLogic.Round
 	end
 	local json = RoundLogic.extractJson(result.GeneratedText)
 	local decoded = json and select(2, pcall(HttpService.JSONDecode, HttpService, json))
-	return RoundLogic.fromAI(decoded, word, rng)
+	local round = RoundLogic.fromAI(decoded, word, rng)
+	round.twist = roll.twist
+	return round
 end
 
 -- (текст, голос)

@@ -12,6 +12,7 @@ local ModelCache = require(script.Parent.ModelCache)
 local Remotes = require(script.Parent.Remotes)
 local Roster = require(script.Parent.Players)
 local Threats = require(script.Parent.Threats)
+local Twists = require(script.Parent.Twists)
 local WordService = require(script.Parent.WordService)
 
 local RoundService = {}
@@ -78,7 +79,9 @@ end
 
 local function playRound(word: string, duration: number, round: RoundLogic.Round): Player?
 	roundNumber += 1
-	print(`[Round {roundNumber}] {round.goal}+{round.threat} @{round.arena} word={word} ai={round.fromAI}`)
+	print(
+		`[Round {roundNumber}] {round.goal}+{round.threat} @{round.arena} twist={round.twist} word={word} ai={round.fromAI}`
+	)
 
 	Arena.build(round.arena)
 	for _, p in PlayersService:GetPlayers() do
@@ -95,6 +98,7 @@ local function playRound(word: string, duration: number, round: RoundLogic.Round
 	local ctx = { word = word, duration = duration, rng = rng }
 	local finishGoal = Goals[round.goal](ctx)
 	local stopThreat = Threats[round.threat](ctx)
+	local stopTwist = Twists[round.twist](ctx)
 
 	local t0 = os.clock()
 	while os.clock() - t0 < duration and #Roster.alive() > 0 do
@@ -104,11 +108,16 @@ local function playRound(word: string, duration: number, round: RoundLogic.Round
 				Roster.eliminate(p, "fell")
 			end
 		end
-		state("round", math.ceil(duration - (os.clock() - t0)), { goal = round.goal, threat = round.threat })
+		state(
+			"round",
+			math.ceil(duration - (os.clock() - t0)),
+			{ goal = round.goal, threat = round.threat, twist = round.twist }
+		)
 		task.wait(0.5)
 	end
 
 	stopThreat()
+	stopTwist()
 	finishGoal()
 
 	local survivors = Roster.alive()

@@ -31,12 +31,12 @@ function Threats.lava(ctx: Ctx): () -> ()
 	lava.Parent = Arena.folder()
 	-- Лава поднимается выше пола: спастись можно только на столбах.
 	local pillars = {}
-	for i = 1, 6 do
+	for i = 1, math.round(6 * math.sqrt(Arena.AreaScale)) do
 		local pillar = Instance.new("Part")
 		pillar.Name = "Pillar"
 		pillar.Anchored = true
 		pillar.Color = Color3.fromRGB(120, 110, 100)
-		pillar.Size = Vector3.new(6, 6 + i * 2, 6)
+		pillar.Size = Vector3.new(6, 6 + ((i - 1) % 6 + 1) * 2, 6)
 		local pos = Arena.randomFloorPoint(ctx.rng)
 		pillar.Position = Vector3.new(pos.X, Arena.FloorY + pillar.Size.Y / 2, pos.Z)
 		pillar.Parent = Arena.folder()
@@ -110,7 +110,8 @@ function Threats.falling(ctx: Ctx): () -> ()
 			end)
 			drop.Parent = Arena.folder()
 			Debris:AddItem(drop, 6)
-			task.wait(math.max(0.25, 0.8 - #Roster.alive() * 0.03)) -- больше игроков — гуще дождь
+			-- больше игроков и больше арена — гуще дождь
+			task.wait(math.max(0.1, (0.8 - #Roster.alive() * 0.03) / Arena.AreaScale))
 		end
 	end)
 	return function()
@@ -121,7 +122,7 @@ end
 function Threats.shrink(ctx: Ctx): () -> ()
 	local active = true
 	task.spawn(function()
-		local rings = 4 -- центральное кольцо (2×2) не трогаем
+		local rings = Arena.Rings
 		local step = ctx.duration * 0.85 / rings
 		for ring = 0, rings - 1 do
 			task.wait(step - 1.5)

@@ -41,6 +41,7 @@ return function()
 		local fb = RoundLogic.fallback("x", rng)
 		assert(RoundLogic.isFair(fb.goal, fb.threat), "fallback is fair")
 		assert(string.find(fb.line, "x", 1, true), "fallback line has word")
+		assert(fb.twist == "none" or table.find(Config.Twists, fb.twist), "fallback twist valid")
 	end
 
 	-- JSON в обёртке
@@ -71,6 +72,12 @@ return function()
 	end
 	for _, t in Config.Threats do
 		assert(type(Threats[t]) == "function", "no Threats." .. t)
+	end
+	local Twists = require(Services.Twists)
+	assert(type(Twists.none) == "function", "no Twists.none")
+	for _, t in Config.Twists do
+		assert(type(Twists[t]) == "function", "no Twists." .. t)
+		assert(Config.TwistNames[t] and Config.TwistHints[t], "no TwistNames/TwistHints." .. t)
 	end
 	local Arena = require(Services.Arena)
 	for _, a in Config.Arenas do

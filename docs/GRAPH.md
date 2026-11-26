@@ -31,11 +31,12 @@ graph LR
   init --> Remotes & Arena & Players & RoundService
   init -. только Studio .-> Spec
   Spec --> RoundLogic & Config & Goals & Threats
-  RoundService --> AIHost & Goals & Threats & Players & Arena & WordService & ModelCache & Remotes & Config
+  RoundService --> AIHost & Goals & Threats & Twists & Players & Arena & WordService & ModelCache & Remotes & Config
   AIHost --> RoundLogic & Config
   WordService --> RoundLogic & Config & Remotes
   Goals --> Arena & Players & Config & Remotes
   Threats --> Arena & Players & ModelCache
+  Twists --> Arena & Players
   ModelCache --> WordBank
   Players --> Arena
   RoundLogic --> Config

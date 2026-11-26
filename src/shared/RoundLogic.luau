@@ -7,6 +7,7 @@ export type Round = {
 	goal: string,
 	threat: string,
 	arena: string,
+	twist: string, -- имя из Config.Twists или "none"
 	line: string, -- фраза ведущего без префикса
 	voice: string, -- та же фраза по-английски для TTS
 	word: string,
@@ -45,6 +46,7 @@ function RoundLogic.fallback(word: string, rng: Random): Round
 		goal = goal,
 		threat = pick(allowedThreats(goal), rng),
 		arena = pick(Config.Arenas, rng),
+		twist = if rng:NextNumber() < Config.TwistChance then pick(Config.Twists, rng) else "none",
 		line = string.format(Config.FallbackLines[goal], word),
 		voice = Config.FallbackVoice[goal],
 		word = word,
@@ -78,6 +80,7 @@ function RoundLogic.fromAI(decoded: any, word: string, rng: Random): Round
 			then decoded.threat
 			else pick(allowedThreats(decoded.goal), rng),
 		arena = if contains(Config.Arenas, decoded.arena) then decoded.arena else pick(Config.Arenas, rng),
+		twist = "none", -- подвох бросает сервер (AIHost), ИИ его только озвучивает
 		line = decoded.line,
 		-- кириллицу TTS не читает, длиннее 300 символов не принимает
 		voice = if type(decoded.voice) == "string"

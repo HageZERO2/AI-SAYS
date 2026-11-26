@@ -1,5 +1,5 @@
 -- Арена строится кодом, чтобы проект собирался из одного Rojo без .rbxl-файла.
--- Все арены — одна и та же сетка плиток 10×10 на высоте FLOOR_Y (на неё опираются цели и угрозы:
+-- Все арены — одна и та же сетка плиток GRID×GRID на высоте FLOOR_Y (на неё опираются цели и угрозы:
 -- сжатие пола по кольцам, лава, зона в центре). Арены отличаются темой: цвет/материал плиток, свет, декор вокруг.
 -- Декор только для вида: CanCollide/CanTouch/CanQuery = false — он не должен ловить падающих (вылет и цель push).
 -- Крупный реквизит — запечённые модели слов (ServerStorage.WordModels, грузит ModelCache); не загрузились — без них.
@@ -10,13 +10,15 @@ local ServerStorage = game:GetService("ServerStorage")
 local Arena = {}
 
 local TILE = 6
-local GRID = 10 -- 10×10 плиток = 60×60 стадов
+local GRID = 16 -- 16×16 плиток = 96×96 стадов (чётное: в центре остаётся 2×2, которое сжатие не трогает)
 local FLOOR_Y = 50
 local HALF = TILE * GRID / 2
 local TOP = FLOOR_Y + 0.5 -- верх плиток
 
 Arena.FloorY = FLOOR_Y
 Arena.Size = TILE * GRID
+Arena.Rings = GRID / 2 - 1 -- колец плиток, которые может убрать сжатие (центр 2×2 остаётся)
+Arena.AreaScale = (Arena.Size / 60) ^ 2 -- во сколько раз арена больше исходной 60×60: под неё плотность угроз
 
 local folder: Folder
 local tiles: { BasePart } = {}
@@ -274,7 +276,8 @@ local THEMES: { [string]: Theme } = {
 		stands = rgb(60, 60, 90),
 		light = { ClockTime = 0, Ambient = rgb(140, 140, 170), OutdoorAmbient = rgb(140, 140, 170), Brightness = 2 },
 		decor = function()
-			for _, e in { { 0, -HALF, 60, 0.4 }, { 0, HALF, 60, 0.4 }, { -HALF, 0, 0.4, 60 }, { HALF, 0, 0.4, 60 } } do
+			local S = Arena.Size
+			for _, e in { { 0, -HALF, S, 0.4 }, { 0, HALF, S, 0.4 }, { -HALF, 0, 0.4, S }, { HALF, 0, 0.4, S } } do
 				deco({
 					Size = Vector3.new(e[3], 0.3, e[4]),
 					Position = Vector3.new(e[1], TOP + 0.1, e[2]),
