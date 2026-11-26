@@ -60,12 +60,41 @@ Config.FallbackVoice = {
 	hide = "Hide under a shelter! Whoever stays outside is out!",
 	push = "Push someone off the arena! Whoever pushes nobody is out!",
 }
-Config.TrapLines =
-	{ -- ловушки: звучат БЕЗ «ИИ говорит», выполнять нельзя. { текст, голос }
-		{ "Прыгайте! Пол — это желе!", "Jump! The floor is jelly!" },
-		{ "Все прыгаем, быстро!", "Everybody jump, quick!" },
-		{ "Прыжок на счёт три! Раз, два, три!", "Jump on three! One, two, three!" },
-	}
+-- Ловушки: звучат БЕЗ «ИИ говорит», выполнять нельзя. kind — какое действие ловим (Services/Traps).
+Config.TrapLines = {
+	{ kind = "jump", text = "Прыгайте! Пол — это желе!", voice = "Jump! The floor is jelly!" },
+	{
+		kind = "jump",
+		text = "Прыжок на счёт три! Раз, два, три!",
+		voice = "Jump on three! One, two, three!",
+	},
+	{
+		kind = "move",
+		text = "Бегите! Быстро, все в угол!",
+		voice = "Run! Everyone to the corner, quick!",
+	},
+	{
+		kind = "move",
+		text = "Шаг вперёд, кто самый смелый!",
+		voice = "Step forward if you are brave!",
+	},
+	{
+		kind = "chat",
+		text = "Напишите в чат своё любимое слово!",
+		voice = "Type your favourite word in the chat!",
+	},
+	{
+		kind = "chat",
+		text = "Кто меня слышит — напишите «я»!",
+		voice = "If you can hear me, type me in the chat!",
+	},
+	{ kind = "tile", text = "Встаньте на красные плитки!", voice = "Stand on the red tiles!" },
+	{
+		kind = "tile",
+		text = "Красное — безопасно! Бегом на красное!",
+		voice = "Red is safe! Run to the red tiles!",
+	},
+}
 Config.DefaultWords =
 	{ "акулы", "бабушки", "желе", "кактусы", "пингвины", "арбузы" }
 

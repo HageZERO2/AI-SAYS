@@ -36,6 +36,7 @@ src/
       AIHost.luau               запрос к Text Generation API → JSON → Round
       Goals.luau                цели: survive, reach_zone, freeze, collect, hide, push
       Threats.luau              угрозы: lava, falling, shrink, chaser, wind, darkness, gravity
+      Traps.luau                ловушки без «ИИ говорит»: jump, move, chat, tile
       Twists.luau               подвохи: reverse (управление наоборот), tiny, leader (охотник за лидером)
       ModelCache.luau           3D-модель из слова: WordBank (ассеты) или GenerationService + кэш в памяти
       Players.luau              кто жив, кто на трибунах (атрибут Alive)
@@ -72,7 +73,7 @@ tools/bake/                     запекание слов в ассеты (Stu
 - **Цель:** функция `Goals.<name>(ctx) -> finish()` + имя в `Config.Goals` + фразы в `Config.FallbackLines` и `Config.FallbackVoice`.
 - **Подвох:** функция `Twists.<name>(ctx) -> stop()` + имя в `Config.Twists` + `Config.TwistNames` (HUD) и `Config.TwistHints` (подсказка ИИ, англ.).
 - **Арену:** тема в `THEMES` в `Services/Arena.luau` + имя в `Config.Arenas`.
-- **Ловушку:** строка в `Config.TrapLines` (сейчас все ловушки — «прыгайте»).
+- **Ловушку:** строка `{kind, text, voice}` в `Config.TrapLines`; новый вид действия — функция `Traps.<kind>(players) -> stop()`.
 
 ## Проверки
 

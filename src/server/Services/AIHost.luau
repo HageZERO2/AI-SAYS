@@ -76,10 +76,8 @@ function AIHost.buildRound(word: string): RoundLogic.Round
 	return round
 end
 
--- (текст, голос)
-function AIHost.trapLine(): (string, string)
-	local pair = Config.TrapLines[rng:NextInteger(1, #Config.TrapLines)]
-	return pair[1], pair[2]
+function AIHost.trapLine(): { kind: string, text: string, voice: string }
+	return Config.TrapLines[rng:NextInteger(1, #Config.TrapLines)]
 end
 
 return AIHost

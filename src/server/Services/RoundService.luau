@@ -12,6 +12,7 @@ local ModelCache = require(script.Parent.ModelCache)
 local Remotes = require(script.Parent.Remotes)
 local Roster = require(script.Parent.Players)
 local Threats = require(script.Parent.Threats)
+local Traps = require(script.Parent.Traps)
 local Twists = require(script.Parent.Twists)
 local WordService = require(script.Parent.WordService)
 
@@ -34,31 +35,16 @@ local function announce(text: string, isAISays: boolean, voice: string?)
 	Remotes.Announce:FireAllClients(text, isAISays, voice)
 end
 
--- Ловушка: приказ БЕЗ «ИИ говорит». Кто подчинился (прыгнул) — вылетает.
+-- Ловушка: приказ БЕЗ «ИИ говорит». Кто подчинился — вылетает (что именно ловим — Services/Traps).
 local function trap()
-	local line, voice = AIHost.trapLine()
-	announce(line, false, voice)
-	local conns = {}
-	for _, p in Roster.alive() do
-		local hum = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
-		if hum then
-			table.insert(
-				conns,
-				hum.StateChanged:Connect(function(_, new)
-					if new == Enum.HumanoidStateType.Jumping then
-						Roster.eliminate(p, "trap")
-					end
-				end)
-			)
-		end
-	end
+	local line = AIHost.trapLine()
+	announce(line.text, false, line.voice)
+	local stopTrap = Traps[line.kind](Roster.alive())
 	for t = Config.Timing.TrapWindow, 1, -1 do
 		state("trap", t)
 		task.wait(1)
 	end
-	for _, c in conns do
-		c:Disconnect()
-	end
+	stopTrap()
 	local out = 0
 	for _, p in PlayersService:GetPlayers() do
 		if p:GetAttribute("LastOut") == "trap" then

@@ -73,6 +73,12 @@ return function()
 	for _, t in Config.Threats do
 		assert(type(Threats[t]) == "function", "no Threats." .. t)
 	end
+	local Traps = require(Services.Traps)
+	for _, line in Config.TrapLines do
+		assert(type(Traps[line.kind]) == "function", "no Traps." .. tostring(line.kind))
+		assert(line.text and line.voice, "trap line without text/voice")
+		assert(not string.find(line.text, Config.AI_PREFIX, 1, true), "trap must not say AI_PREFIX")
+	end
 	local Twists = require(Services.Twists)
 	assert(type(Twists.none) == "function", "no Twists.none")
 	for _, t in Config.Twists do
