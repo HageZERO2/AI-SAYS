@@ -4,6 +4,7 @@ local PlayersService = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Config = require(ReplicatedStorage.Shared.Config)
+local RoundLogic = require(ReplicatedStorage.Shared.RoundLogic)
 local AIHost = require(script.Parent.AIHost)
 local Arena = require(script.Parent.Arena)
 local Goals = require(script.Parent.Goals)
@@ -70,10 +71,8 @@ local function trap()
 	task.wait(2)
 end
 
-local function playRound(word: string, duration: number): Player?
+local function playRound(word: string, duration: number, round: RoundLogic.Round): Player?
 	roundNumber += 1
-	state("thinking", 0)
-	local round = AIHost.buildRound(word)
 	print(`[Round {roundNumber}] {round.goal}+{round.threat} word={word} ai={round.fromAI}`)
 
 	Arena.build()
@@ -132,11 +131,21 @@ function RoundService.run()
 			state("waiting", 0)
 			task.wait(1)
 		end
+		-- ИИ думает во время паузы, а не после неё
+		local round: RoundLogic.Round? = nil
+		task.spawn(function()
+			local ok, built = pcall(AIHost.buildRound, word)
+			round = if ok then built else RoundLogic.fallback(word, rng)
+		end)
 		for t = Config.Timing.Intermission, 1, -1 do
 			state("intermission", t)
 			task.wait(1)
 		end
-		local winner = playRound(word, duration)
+		while not round do
+			state("thinking", 0)
+			task.wait(0.2)
+		end
+		local winner = playRound(word, duration, round)
 		state("word", Config.Timing.WordPrompt, { winner = winner and winner.DisplayName })
 		word = WordService.ask(winner)
 		-- 3D-модель готовится в фоне; пока не готова — шар с подписью
