@@ -28,7 +28,7 @@ graph LR
     Voice
   end
 
-  init --> Remotes & Arena & Players & RoundService
+  init --> Remotes & Arena & Data & Shop & Players & RoundService
   init -. только Studio .-> Spec
   Spec --> RoundLogic & Config & Goals & Threats
   RoundService --> AIHost & Goals & Threats & Traps & Twists & Players & Arena & WordService & ModelCache & Remotes & Config
@@ -38,6 +38,7 @@ graph LR
   Threats --> Arena & Players & ModelCache
   Twists --> Arena & Players
   Traps --> Arena & Players
+  Shop --> Data & WordService & Config
   Players & Threats & Goals & Twists & RoundService --> Vfx
   Vfx --> Remotes
   ModelCache --> WordBank

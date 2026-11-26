@@ -110,6 +110,8 @@ local function playRound(word: string, duration: number, round: RoundLogic.Round
 	local survivors = Roster.alive()
 	for _, p in survivors do
 		p:SetAttribute("Wins", (p:GetAttribute("Wins") or 0) + 1)
+		local coins = Config.CoinsPerRound * (if p:GetAttribute("VIP") then 2 else 1)
+		p:SetAttribute("Coins", (p:GetAttribute("Coins") or 0) + coins)
 		local r = Roster.root(p)
 		if r then
 			Vfx.burst("confetti", r.Position + Vector3.new(0, 3, 0))
@@ -120,7 +122,15 @@ local function playRound(word: string, duration: number, round: RoundLogic.Round
 		announce("Никто не выжил. Я непобедим!", false, "Nobody survived. I am unbeatable!")
 		return nil
 	end
-	local winner = survivors[rng:NextInteger(1, #survivors)]
+	-- VIP среди выживших — слово даёт VIP
+	local vips = {}
+	for _, p in survivors do
+		if p:GetAttribute("VIP") then
+			table.insert(vips, p)
+		end
+	end
+	local pool = if #vips > 0 then vips else survivors
+	local winner = pool[rng:NextInteger(1, #pool)]
 	announce(
 		`Выжили: {#survivors}. {winner.DisplayName}, дай мне слово для следующего раунда!`,
 		false,
@@ -152,8 +162,17 @@ function RoundService.run()
 			task.wait(0.2)
 		end
 		local winner = playRound(word, duration, round)
-		state("word", Config.Timing.WordPrompt, { winner = winner and winner.DisplayName })
-		word = WordService.ask(winner)
+		local paid = WordService.takePaid() -- купленное слово важнее победы
+		if paid then
+			announce(
+				`{paid.DisplayName} купил право на слово!`,
+				false,
+				`{paid.DisplayName} bought the next word!`
+			)
+		end
+		local asker = paid or winner
+		state("word", Config.Timing.WordPrompt, { winner = asker and asker.DisplayName })
+		word = WordService.ask(asker)
 		-- 3D-модель готовится в фоне; пока не готова — шар с подписью
 		ModelCache.request(word)
 		duration = math.max(Config.Timing.RoundMin, duration * Config.Timing.SpeedUp)

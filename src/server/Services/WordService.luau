@@ -37,6 +37,23 @@ end)
 
 local rng = Random.new()
 
+-- Купленное право на слово (Shop): очередь покупателей, первый в игре — следующий, кого спросят.
+local paid: { Player } = {}
+
+function WordService.addPaid(p: Player)
+	table.insert(paid, p)
+end
+
+function WordService.takePaid(): Player?
+	while #paid > 0 do
+		local p = table.remove(paid, 1) :: Player
+		if p.Parent then
+			return p
+		end
+	end
+	return nil
+end
+
 function WordService.randomWord(): string
 	return Config.DefaultWords[rng:NextInteger(1, #Config.DefaultWords)]
 end

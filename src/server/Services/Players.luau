@@ -32,6 +32,17 @@ function Roster.eliminate(player: Player, reason: string)
 	if not Roster.isAlive(player) then
 		return
 	end
+	local lives = player:GetAttribute("ExtraLives") or 0
+	if lives > 0 then -- купленная вторая жизнь: вспышка и обратно на арену
+		player:SetAttribute("ExtraLives", lives - 1)
+		local r = root(player)
+		if r then
+			Vfx.burst("sparkle", r.Position, Color3.fromRGB(120, 255, 160))
+			r.AssemblyLinearVelocity = Vector3.zero
+			r.CFrame = CFrame.new(Arena.randomFloorPoint(rng))
+		end
+		return
+	end
 	player:SetAttribute("Alive", false)
 	player:SetAttribute("LastOut", reason)
 	local r = root(player)

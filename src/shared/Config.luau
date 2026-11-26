@@ -34,6 +34,14 @@ Config.Incompatible = {
 	hide = { "lava", "shrink" }, -- навесы стоят на полу: лава и исчезающие плитки делают цель невыполнимой
 }
 
+-- ID товаров (Creator Dashboard / Open Cloud). 0 — не создан: кнопки нет, Shop его не выдаёт.
+Config.Shop = {
+	Word = 3736645921, -- developer product «Моё слово»
+	ExtraLife = 3736645937, -- developer product «Вторая жизнь»
+	Shield = 3736645950, -- developer product «Щит от охотника»
+	VipPass = 2100198687, -- game pass VIP
+}
+Config.CoinsPerRound = 10 -- монеты за пережитый раунд (VIP ×2)
 Config.CollectTarget = 3 -- сколько предметов собрать в цели collect
 Config.Push = {
 	Range = 8, -- толкаем ближайшего живого в этом радиусе (стады)

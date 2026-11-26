@@ -63,6 +63,11 @@ function Twists.leader(ctx: Ctx): () -> ()
 	if not target then
 		return function() end
 	end
+	local shields = target:GetAttribute("Shields") or 0
+	if shields > 0 then -- купленный щит: охоты в этот раунд нет
+		target:SetAttribute("Shields", shields - 1)
+		return function() end
+	end
 	target:SetAttribute("Hunted", true)
 	local hunter = Instance.new("Part")
 	hunter.Name = "Hunter"

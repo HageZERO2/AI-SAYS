@@ -43,6 +43,8 @@ src/
       Players.luau              кто жив, кто на трибунах (атрибут Alive)
       Arena.luau                4 арены (school, kitchen, candy, space): общая сетка 16×16 плиток + тема и декор
       WordService.luau          слово победителя: проверка, фильтр Roblox
+      Data.luau                 сохранение монет/побед (DataStore + замок сессии), чеки покупок
+      Shop.luau                 покупки за Robux: слово, вторая жизнь, щит, VIP (ID в Config.Shop)
       Remotes.luau              список всех RemoteEvent и их аргументов
     WordBank.luau               500 запечённых слов: слово → assetId модели или { pack, part } (делает tools/bake)
     Tests/RoundLogic.spec.luau  самопроверка, запускается при Play в Studio

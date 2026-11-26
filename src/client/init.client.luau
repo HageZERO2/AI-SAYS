@@ -2,6 +2,7 @@
 -- Клиент ничего не решает — только показывает State/Announce и отправляет слово.
 
 local ContextActionService = game:GetService("ContextActionService")
+local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -62,6 +63,48 @@ wordBox.ClearTextOnFocus = false
 wordBox.Visible = false
 Instance.new("UICorner").Parent = wordBox
 wordBox.Parent = gui
+
+-- Магазин: кнопки только для созданных товаров (Config.Shop ≠ 0). Цену показывает окно покупки Roblox.
+local shop = Instance.new("Frame")
+shop.Name = "Shop"
+shop.AnchorPoint = Vector2.new(1, 1)
+shop.Position = UDim2.new(1, -12, 1, -12)
+shop.Size = UDim2.fromOffset(170, 0)
+shop.AutomaticSize = Enum.AutomaticSize.Y
+shop.BackgroundTransparency = 1
+local list = Instance.new("UIListLayout")
+list.Padding = UDim.new(0, 6)
+list.Parent = shop
+for _, item in
+	{
+		{ Config.Shop.Word, "✍ Моё слово", false },
+		{ Config.Shop.ExtraLife, "❤ Вторая жизнь", false },
+		{ Config.Shop.Shield, "🛡 Щит от охотника", false },
+		{ Config.Shop.VipPass, "👑 VIP", true },
+	}
+do
+	local id, text, isPass = item[1], item[2], item[3]
+	if id ~= 0 then
+		local b = Instance.new("TextButton")
+		b.Size = UDim2.fromOffset(170, 38)
+		b.BackgroundColor3 = if isPass then Color3.fromRGB(255, 200, 60) else Color3.fromRGB(40, 40, 60)
+		b.BackgroundTransparency = 0.15
+		b.TextColor3 = if isPass then Color3.fromRGB(40, 30, 0) else Color3.new(1, 1, 1)
+		b.Font = Enum.Font.FredokaOne
+		b.TextScaled = true
+		b.Text = text
+		Instance.new("UICorner").Parent = b
+		b.Activated:Connect(function()
+			if isPass then
+				MarketplaceService:PromptGamePassPurchase(player, id)
+			else
+				MarketplaceService:PromptProductPurchase(player, id)
+			end
+		end)
+		b.Parent = shop
+	end
+end
+shop.Parent = gui
 
 gui.Parent = player:WaitForChild("PlayerGui")
 
@@ -142,6 +185,13 @@ Remotes.State.OnClientEvent:Connect(function(s)
 	end
 	if player:GetAttribute("Hunted") then
 		me = "за тобой охотник!"
+	end
+	local lives, shields = player:GetAttribute("ExtraLives") or 0, player:GetAttribute("Shields") or 0
+	if lives > 0 then
+		me ..= ` · ❤×{lives}`
+	end
+	if shields > 0 then
+		me ..= ` · 🛡×{shields}`
 	end
 	if s.twist and s.twist ~= "none" then
 		me ..= ` · подвох: {Config.TwistNames[s.twist]}`
