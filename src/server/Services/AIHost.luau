@@ -40,11 +40,28 @@ function AIHost.buildRound(word: string): RoundLogic.Round
 	if not generator then
 		return RoundLogic.fallback(word, rng)
 	end
-	local ok, result = pcall(function()
-		return (generator :: any):GenerateTextAsync({
-			UserPrompt = "Слово игрока для этого раунда: " .. word,
-		})
-	end)
+	-- Сама модель всегда выбирает collect+wind, поэтому кубики бросает сервер, а ИИ пишет фразу под них.
+	local roll = RoundLogic.fallback(word, rng)
+	-- UserPrompt целиком на кириллице API отвергает с HTTP 400, английская обёртка проходит.
+	local prompt = string.format(
+		"Player word for this round: %s. This round MUST use goal=%s, threat=%s, arena=%s.",
+		word,
+		roll.goal,
+		roll.threat,
+		roll.arena
+	)
+	local ok, result
+	-- API в бете случайно отвечает HTTP 400 (тот же промпт через секунду проходит): повтор с паузой.
+	for attempt = 1, 3 do
+		ok, result = pcall(function()
+			(generator :: any).Seed = rng:NextInteger(1, 2 ^ 30)
+			return (generator :: any):GenerateTextAsync({ UserPrompt = prompt })
+		end)
+		if ok then
+			break
+		end
+		task.wait(attempt)
+	end
 	if not ok or type(result) ~= "table" or type(result.GeneratedText) ~= "string" then
 		warn("[AIHost] генерация не удалась:", result)
 		return RoundLogic.fallback(word, rng)

@@ -6,6 +6,7 @@ local Voice = {}
 local VOICE_ID = "1" -- 10 голосов; смена голоса — платная фишка (см. docs/DESIGN.md)
 
 local tts: Instance?
+local warned = false
 local ok = pcall(function()
 	local t: any = Instance.new("AudioTextToSpeech" :: any)
 	t.VoiceId = VOICE_ID
@@ -28,15 +29,19 @@ function Voice.say(text: string)
 	end
 	-- У AudioTextToSpeech нет Stop(): Pause + сброс позиции. LoadAsync ждёт синтеза, поэтому в отдельном потоке.
 	task.spawn(function()
-		local ok, err = pcall(function()
+		local said, err = pcall(function()
 			local t = tts :: any
 			t:Pause()
 			t.Text = text
 			t.TimePosition = 0
-			t:LoadAsync()
+			-- Русский TTS Roblox не поддерживает: LoadAsync вернёт Failure, тогда только текст
+			if t:LoadAsync() ~= Enum.AssetFetchStatus.Success then
+				error("TTS не синтезировал фразу (язык не поддерживается?)")
+			end
 			t:Play()
 		end)
-		if not ok then
+		if not said and not warned then
+			warned = true
 			warn("[Voice] не удалось сказать:", err)
 		end
 	end)
