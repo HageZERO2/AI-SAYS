@@ -5,8 +5,10 @@
 --   get(word)     — копия модели, если уже готова, иначе nil (угроза возьмёт шар с подписью).
 
 local InsertService = game:GetService("InsertService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 
+local RoundLogic = require(ReplicatedStorage.Shared.RoundLogic)
 local WordBank = require(script.Parent.Parent.WordBank)
 
 local ModelCache = {}
@@ -21,6 +23,20 @@ folder.Name = "WordModels"
 folder.Parent = ServerStorage
 
 local pending: { [string]: boolean } = {}
+
+-- Формы слова: «коты» → «кот» из банка. Совпали основы у разных слов — берём первое по алфавиту (стабильно).
+local byStem: { [string]: string } = {}
+for word in WordBank do
+	local stem = RoundLogic.stem(word)
+	if not byStem[stem] or word < byStem[stem] then
+		byStem[stem] = word
+	end
+end
+
+-- Слово банка для этой формы; не нашлось — само слово (его модель сгенерируется по нему).
+local function resolve(word: string): string
+	return if WordBank[word] then word else byStem[RoundLogic.stem(word)] or word
+end
 
 -- Запечённые слова грузим при старте, параллельно (по очереди — десятки секунд, первый раунд не дождётся).
 -- Запись банка — либо assetId модели из одного слова, либо { pack, part }: пакет из многих слов,
@@ -51,6 +67,7 @@ for asset, parts in byAsset do
 end
 
 function ModelCache.request(word: string)
+	word = resolve(word)
 	if not okService or WordBank[word] or pending[word] or folder:FindFirstChild(word) then
 		return
 	end
@@ -77,7 +94,7 @@ end
 
 -- Копия модели, отмасштабированная так, чтобы большая сторона = size.
 function ModelCache.get(word: string, size: number): BasePart?
-	local source = folder:FindFirstChild(word) :: BasePart?
+	local source = folder:FindFirstChild(resolve(word)) :: BasePart?
 	if not source then
 		return nil
 	end

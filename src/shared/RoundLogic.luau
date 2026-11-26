@@ -115,4 +115,83 @@ function RoundLogic.cleanWord(raw: any): string?
 	return word
 end
 
+-- Окончания для основы: длинные раньше коротких (отрезаем одно, самое длинное подходящее).
+-- shortcut: грубый стеммер без словаря — «собачка» не сведётся к «собака»; нужен словарь форм, если промахов много.
+local ENDINGS = {
+	"иками",
+	"ятами",
+	"ами",
+	"ями",
+	"иков",
+	"иках",
+	"ики",
+	"ика",
+	"ику",
+	"иком",
+	"ике",
+	"ята",
+	"ят",
+	"ёнок",
+	"енок",
+	"онок",
+	"ок",
+	"ек",
+	"ик",
+	"ая",
+	"яя",
+	"ое",
+	"ее",
+	"ые",
+	"ие",
+	"ый",
+	"ий",
+	"ой",
+	"ую",
+	"юю",
+	"ых",
+	"их",
+	"ым",
+	"им",
+	"ов",
+	"ев",
+	"ей",
+	"ах",
+	"ях",
+	"ом",
+	"ем",
+	"ою",
+	"ею",
+	"ию",
+	"ия",
+	"ья",
+	"ье",
+	"ы",
+	"и",
+	"а",
+	"я",
+	"у",
+	"ю",
+	"е",
+	"о",
+	"ь",
+	"й",
+}
+
+-- Основа слова для поиска в банке моделей: «коты», «котики», «котов» → «кот». Каждое слово фразы отдельно.
+-- Одна и та же функция для слова игрока и для ключей банка — важна согласованность, а не грамматика.
+function RoundLogic.stem(word: string): string
+	local parts = {}
+	for token in string.gmatch((string.gsub(word, "ё", "е")), "[^%s]+") do
+		for _, ending in ENDINGS do
+			local cut = #token - #ending
+			if cut > 0 and string.sub(token, cut + 1) == ending and (utf8.len(string.sub(token, 1, cut)) or 0) >= 2 then
+				token = string.sub(token, 1, cut)
+				break
+			end
+		end
+		table.insert(parts, token)
+	end
+	return table.concat(parts, " ")
+end
+
 return RoundLogic

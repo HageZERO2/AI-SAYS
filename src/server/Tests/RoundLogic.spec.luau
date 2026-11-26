@@ -56,6 +56,24 @@ return function()
 	assert(RoundLogic.cleanWord("123") == nil, "digits")
 	assert(RoundLogic.cleanWord(42) == nil, "non-string")
 
+	-- формы слова сводятся к одной основе (поиск модели в банке)
+	for _, pair in
+		{
+			{ "кот", "коты" },
+			{ "кот", "котики" },
+			{ "кот", "котов" },
+			{ "кот", "котята" },
+			{ "собака", "собаки" },
+			{ "лошадь", "лошади" },
+			{ "ёж", "ежи" },
+			{ "яблоко", "яблоки" },
+			{ "золотая рыбка", "золотые рыбки" },
+		}
+	do
+		assert(RoundLogic.stem(pair[1]) == RoundLogic.stem(pair[2]), `stem: {pair[1]} vs {pair[2]}`)
+	end
+	assert(RoundLogic.stem("кот") ~= RoundLogic.stem("кит"), "stem keeps different words apart")
+
 	-- Config согласован с обработчиками: забыть функцию или фразу = упасть при первом таком раунде
 	local Services = script.Parent.Parent.Services
 	local Goals = require(Services.Goals)
