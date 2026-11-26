@@ -64,13 +64,15 @@ wordBox.Parent = gui
 gui.Parent = player:WaitForChild("PlayerGui")
 
 -- События ----------------------------------------------------------
-Remotes.Announce.OnClientEvent:Connect(function(text: string, isAISays: boolean)
+Remotes.Announce.OnClientEvent:Connect(function(text: string, isAISays: boolean, voice: string?)
 	command.Text = text
 	command.TextColor3 = if isAISays then Color3.fromRGB(255, 230, 80) else Color3.new(1, 1, 1)
 	command.Size = UDim2.fromScale(0.9, 0.14)
 	TweenService:Create(command, TweenInfo.new(0.3, Enum.EasingStyle.Back), { Size = UDim2.fromScale(0.8, 0.12) })
 		:Play()
-	Voice.say(text)
+	if voice then
+		Voice.say(voice)
+	end
 end)
 
 local PHASE = {

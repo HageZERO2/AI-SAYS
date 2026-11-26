@@ -14,6 +14,17 @@ return function()
 		rng
 	)
 	assert(r.fromAI and r.goal == "survive" and r.threat == "lava", "valid AI round")
+	assert(r.voice == Config.FallbackVoice.survive, "no voice → fallback voice")
+	local v = RoundLogic.fromAI({ goal = "survive", threat = "lava", line = "a", voice = "Run!" }, "x", rng)
+	assert(v.voice == "Run!", "AI voice kept")
+	local dup = RoundLogic.fromAI(
+		{ goal = "survive", threat = "lava", line = "ИИ говорит: беги!", voice = "AI says: run!" },
+		"x",
+		rng
+	)
+	assert(dup.line == "беги!" and dup.voice == "run!", "duplicate prefix stripped")
+	local cyr = RoundLogic.fromAI({ goal = "survive", threat = "lava", line = "a", voice = "Беги!" }, "x", rng)
+	assert(cyr.voice == Config.FallbackVoice.survive, "cyrillic voice → fallback")
 
 	-- мусор и чужие значения → резерв
 	assert(not RoundLogic.fromAI(nil, "x", rng).fromAI, "nil → fallback")
@@ -51,6 +62,7 @@ return function()
 	for _, g in Config.Goals do
 		assert(type(Goals[g]) == "function", "no Goals." .. g)
 		assert(Config.FallbackLines[g], "no FallbackLines." .. g)
+		assert(Config.FallbackVoice[g], "no FallbackVoice." .. g)
 		local fair = 0
 		for _, t in Config.Threats do
 			fair += if RoundLogic.isFair(g, t) then 1 else 0

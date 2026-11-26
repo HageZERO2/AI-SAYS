@@ -24,8 +24,7 @@ if not ok then
 end
 
 function Voice.say(text: string)
-	-- Кириллица: TTS её не синтезирует, а движок пишет «Failed to load sound : InvalidText» на каждую фразу
-	if not tts or string.find(text, "[\208\209]") then
+	if not tts then
 		return
 	end
 	-- У AudioTextToSpeech нет Stop(): Pause + сброс позиции. LoadAsync ждёт синтеза, поэтому в отдельном потоке.
@@ -35,7 +34,6 @@ function Voice.say(text: string)
 			t:Pause()
 			t.Text = text
 			t.TimePosition = 0
-			-- Русский TTS Roblox не поддерживает: LoadAsync вернёт Failure, тогда только текст
 			if t:LoadAsync() ~= Enum.AssetFetchStatus.Success then
 				error("TTS не синтезировал фразу (язык не поддерживается?)")
 			end

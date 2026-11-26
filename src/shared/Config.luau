@@ -4,6 +4,7 @@
 local Config = {}
 
 Config.AI_PREFIX = "ИИ говорит:"
+Config.AI_PREFIX_VOICE = "AI says:" -- голос английский: Roblox TTS не умеет русский
 
 Config.Goals = { "survive", "reach_zone", "freeze", "collect" } -- из 6 в дизайне
 -- все 7 угроз из дизайна
@@ -28,11 +29,19 @@ Config.FallbackLines = {
 	freeze = "замрите! Кто шевельнётся — встретится с %s!",
 	collect = "соберите 3 звезды, пока %s не собрали вас!",
 }
-Config.TrapLines = { -- ловушки: звучат БЕЗ «ИИ говорит», выполнять нельзя
-	"Прыгайте! Пол — это желе!",
-	"Все прыгаем, быстро!",
-	"Прыжок на счёт три! Раз, два, три!",
+-- Голос резерва (английский, без слова: русское слово TTS пропускает).
+Config.FallbackVoice = {
+	survive = "Survive until the timer runs out!",
+	reach_zone = "Run to the green zone before it is too late!",
+	freeze = "Freeze! Whoever moves is out!",
+	collect = "Collect three stars before time runs out!",
 }
+Config.TrapLines =
+	{ -- ловушки: звучат БЕЗ «ИИ говорит», выполнять нельзя. { текст, голос }
+		{ "Прыгайте! Пол — это желе!", "Jump! The floor is jelly!" },
+		{ "Все прыгаем, быстро!", "Everybody jump, quick!" },
+		{ "Прыжок на счёт три! Раз, два, три!", "Jump on three! One, two, three!" },
+	}
 Config.DefaultWords =
 	{ "акулы", "бабушки", "желе", "кактусы", "пингвины", "арбузы" }
 

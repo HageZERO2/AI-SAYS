@@ -12,7 +12,7 @@ local AIHost = {}
 local SYSTEM_PROMPT =
 	[[Ты — ведущий детской игры "ИИ говорит" (как "Саймон говорит"). Ты дерзкий и смешной, без грубости.
 Собери раунд ТОЛЬКО из разрешённых вариантов и ответь ОДНИМ JSON без пояснений:
-{"goal": "<цель>", "threat": "<угроза>", "arena": "<арена>", "line": "<фраза ведущего до 120 символов, обязательно со словом игрока>"}
+{"goal": "<цель>", "threat": "<угроза>", "arena": "<арена>", "line": "<фраза ведущего до 120 символов, обязательно со словом игрока>", "voice": "<та же фраза по-английски, слово игрока переведи на английский>"}
 Цели: %s. Угрозы: %s. Арены: %s.
 Не начинай line со слов "ИИ говорит" — сервер добавит их сам.]]
 
@@ -71,8 +71,10 @@ function AIHost.buildRound(word: string): RoundLogic.Round
 	return RoundLogic.fromAI(decoded, word, rng)
 end
 
-function AIHost.trapLine(): string
-	return Config.TrapLines[rng:NextInteger(1, #Config.TrapLines)]
+-- (текст, голос)
+function AIHost.trapLine(): (string, string)
+	local pair = Config.TrapLines[rng:NextInteger(1, #Config.TrapLines)]
+	return pair[1], pair[2]
 end
 
 return AIHost

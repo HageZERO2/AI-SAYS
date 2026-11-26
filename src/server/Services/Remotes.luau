@@ -1,5 +1,5 @@
 -- Все RemoteEvent создаёт сервер. Клиент ждёт их через ReplicatedStorage:WaitForChild("Remotes").
---   Announce   S→C  (text: string, isAISays: boolean)  — фраза ведущего, клиент озвучивает
+--   Announce   S→C  (text: string, isAISays: boolean, voice: string?) — фраза ведущего; voice (англ.) клиент озвучивает
 --   State      S→C  (state: {phase, timeLeft, alive, round, goal?, threat?})
 --   AskWord    S→C  (seconds: number) — только победителю
 --   SubmitWord C→S  (word: string)    — валидируется в WordService

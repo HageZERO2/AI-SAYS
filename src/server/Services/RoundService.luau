@@ -28,13 +28,15 @@ local function state(phase: string, timeLeft: number, extra: { [string]: any }?)
 	Remotes.State:FireAllClients(s)
 end
 
-local function announce(text: string, isAISays: boolean)
-	Remotes.Announce:FireAllClients(text, isAISays)
+-- voice: английская версия для TTS (nil — молча)
+local function announce(text: string, isAISays: boolean, voice: string?)
+	Remotes.Announce:FireAllClients(text, isAISays, voice)
 end
 
 -- Ловушка: приказ БЕЗ «ИИ говорит». Кто подчинился (прыгнул) — вылетает.
 local function trap()
-	announce(AIHost.trapLine(), false)
+	local line, voice = AIHost.trapLine()
+	announce(line, false, voice)
 	local conns = {}
 	for _, p in Roster.alive() do
 		local hum = p.Character and p.Character:FindFirstChildOfClass("Humanoid")
@@ -62,12 +64,15 @@ local function trap()
 			out += 1
 		end
 	end
-	announce(
-		if out > 0
-			then `Ха! Я не говорил «ИИ говорит». Минус {out}.`
-			else "Хм, никто не попался. Умные...",
-		false
-	)
+	if out > 0 then
+		announce(
+			`Ха! Я не говорил «ИИ говорит». Минус {out}.`,
+			false,
+			`Ha! I never said AI says. Minus {out}.`
+		)
+	else
+		announce("Хм, никто не попался. Умные...", false, "Hmm, nobody fell for it. Smart...")
+	end
 	task.wait(2)
 end
 
@@ -86,7 +91,7 @@ local function playRound(word: string, duration: number, round: RoundLogic.Round
 		trap()
 	end
 
-	announce(`{Config.AI_PREFIX} {round.line}`, true)
+	announce(`{Config.AI_PREFIX} {round.line}`, true, `{Config.AI_PREFIX_VOICE} {round.voice}`)
 	local ctx = { word = word, duration = duration, rng = rng }
 	local finishGoal = Goals[round.goal](ctx)
 	local stopThreat = Threats[round.threat](ctx)
@@ -112,13 +117,14 @@ local function playRound(word: string, duration: number, round: RoundLogic.Round
 	end
 	streak = if #survivors > 0 then streak + 1 else 0
 	if #survivors == 0 then
-		announce("Никто не выжил. Я непобедим!", false)
+		announce("Никто не выжил. Я непобедим!", false, "Nobody survived. I am unbeatable!")
 		return nil
 	end
 	local winner = survivors[rng:NextInteger(1, #survivors)]
 	announce(
 		`Выжили: {#survivors}. {winner.DisplayName}, дай мне слово для следующего раунда!`,
-		false
+		false,
+		`{#survivors} survived. {winner.DisplayName}, give me a word for the next round!`
 	)
 	return winner
 end

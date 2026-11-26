@@ -8,6 +8,7 @@ export type Round = {
 	threat: string,
 	arena: string,
 	line: string, -- фраза ведущего без префикса
+	voice: string, -- та же фраза по-английски для TTS
 	word: string,
 	fromAI: boolean,
 }
@@ -45,6 +46,7 @@ function RoundLogic.fallback(word: string, rng: Random): Round
 		threat = pick(allowedThreats(goal), rng),
 		arena = pick(Config.Arenas, rng),
 		line = string.format(Config.FallbackLines[goal], word),
+		voice = Config.FallbackVoice[goal],
 		word = word,
 		fromAI = false,
 	}
@@ -52,6 +54,13 @@ end
 
 -- decoded: таблица из HttpService:JSONDecode ответа ИИ (или nil). Всё невалидное — в резерв.
 function RoundLogic.fromAI(decoded: any, word: string, rng: Random): Round
+	-- ИИ иногда сам пишет «ИИ говорит:», а сервер добавляет префикс ещё раз
+	if type(decoded) == "table" and type(decoded.line) == "string" then
+		decoded.line = string.gsub(decoded.line, "^%s*ИИ говорит%s*[:,!]?%s*", "")
+		if type(decoded.voice) == "string" then
+			decoded.voice = string.gsub(decoded.voice, "^%s*[Aa][Ii] [Ss]ays%s*[:,!]?%s*", "")
+		end
+	end
 	if
 		type(decoded) ~= "table"
 		or not contains(Config.Goals, decoded.goal)
@@ -70,6 +79,13 @@ function RoundLogic.fromAI(decoded: any, word: string, rng: Random): Round
 			else pick(allowedThreats(decoded.goal), rng),
 		arena = if contains(Config.Arenas, decoded.arena) then decoded.arena else pick(Config.Arenas, rng),
 		line = decoded.line,
+		-- кириллицу TTS не читает, длиннее 300 символов не принимает
+		voice = if type(decoded.voice) == "string"
+				and #decoded.voice > 0
+				and #decoded.voice <= 250
+				and not string.find(decoded.voice, "[\208\209]")
+			then decoded.voice
+			else Config.FallbackVoice[decoded.goal],
 		word = word,
 		fromAI = true,
 	}

@@ -47,7 +47,7 @@ graph LR
 
 ```mermaid
 graph LR
-  RS[RoundService] -- "Announce(text, isAISays)" --> C[Клиент: HUD + Voice]
+  RS[RoundService] -- "Announce(text, isAISays, voice)" --> C[Клиент: HUD + Voice]
   RS -- "State{phase, timeLeft, alive, round, streak, goal?}" --> C
   WS[WordService] -- "AskWord(seconds) — только победителю" --> C
   C -- "SubmitWord(word) → cleanWord + TextService-фильтр" --> WS
