@@ -90,7 +90,7 @@ function RoundLogic.cleanWord(raw: any): string?
 	if len == nil or len < 2 or len > Config.MaxWordLength then
 		return nil
 	end
-	if string.find(word, "[%c%d<>{}\"\\]") then
+	if string.find(word, '[%c%d<>{}"\\]') then
 		return nil
 	end
 	return word

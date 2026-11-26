@@ -9,7 +9,8 @@ local RoundLogic = require(ReplicatedStorage.Shared.RoundLogic)
 
 local AIHost = {}
 
-local SYSTEM_PROMPT = [[Ты — ведущий детской игры "ИИ говорит" (как "Саймон говорит"). Ты дерзкий и смешной, без грубости.
+local SYSTEM_PROMPT =
+	[[Ты — ведущий детской игры "ИИ говорит" (как "Саймон говорит"). Ты дерзкий и смешной, без грубости.
 Собери раунд ТОЛЬКО из разрешённых вариантов и ответь ОДНИМ JSON без пояснений:
 {"goal": "<цель>", "threat": "<угроза>", "arena": "<арена>", "line": "<фраза ведущего до 120 символов, обязательно со словом игрока>"}
 Цели: %s. Угрозы: %s. Арены: %s.
@@ -17,14 +18,14 @@ local SYSTEM_PROMPT = [[Ты — ведущий детской игры "ИИ г
 
 local generator: Instance? = nil
 local okCreate = pcall(function()
-	local g = Instance.new("TextGenerator" :: any)
-	;(g :: any).SystemPrompt = string.format(
+	local g: any = Instance.new("TextGenerator" :: any)
+	g.SystemPrompt = string.format(
 		SYSTEM_PROMPT,
 		table.concat(Config.Goals, ", "),
 		table.concat(Config.Threats, ", "),
 		table.concat(Config.Arenas, ", ")
 	)
-	;(g :: any).Temperature = 0.9
+	g.Temperature = 0.9
 	g.Parent = script
 	generator = g
 end)

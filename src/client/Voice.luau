@@ -7,8 +7,8 @@ local VOICE_ID = "1" -- 10 голосов; смена голоса — плат�
 
 local tts: Instance?
 local ok = pcall(function()
-	local t = Instance.new("AudioTextToSpeech" :: any)
-	;(t :: any).VoiceId = VOICE_ID
+	local t: any = Instance.new("AudioTextToSpeech" :: any)
+	t.VoiceId = VOICE_ID
 	local out = Instance.new("AudioDeviceOutput" :: any)
 	local wire = Instance.new("Wire")
 	wire.SourceInstance = t

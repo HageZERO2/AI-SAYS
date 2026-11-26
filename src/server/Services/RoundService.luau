@@ -60,7 +60,12 @@ local function trap()
 			out += 1
 		end
 	end
-	announce(if out > 0 then `Ха! Я не говорил «ИИ говорит». Минус {out}.` else "Хм, никто не попался. Умные...", false)
+	announce(
+		if out > 0
+			then `Ха! Я не говорил «ИИ говорит». Минус {out}.`
+			else "Хм, никто не попался. Умные...",
+		false
+	)
 	task.wait(2)
 end
 
@@ -111,7 +116,10 @@ local function playRound(word: string, duration: number): Player?
 		return nil
 	end
 	local winner = survivors[rng:NextInteger(1, #survivors)]
-	announce(`Выжили: {#survivors}. {winner.DisplayName}, дай мне слово для следующего раунда!`, false)
+	announce(
+		`Выжили: {#survivors}. {winner.DisplayName}, дай мне слово для следующего раунда!`,
+		false
+	)
 	return winner
 end
 

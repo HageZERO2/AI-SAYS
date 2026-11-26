@@ -8,13 +8,20 @@ return function()
 	local rng = Random.new(42)
 
 	-- валидный ответ ИИ принимается
-	local r = RoundLogic.fromAI({ goal = "survive", threat = "lava", arena = "school", line = "акулы!" }, "акулы", rng)
+	local r = RoundLogic.fromAI(
+		{ goal = "survive", threat = "lava", arena = "school", line = "акулы!" },
+		"акулы",
+		rng
+	)
 	assert(r.fromAI and r.goal == "survive" and r.threat == "lava", "valid AI round")
 
 	-- мусор и чужие значения → резерв
 	assert(not RoundLogic.fromAI(nil, "x", rng).fromAI, "nil → fallback")
 	assert(not RoundLogic.fromAI({ goal = "fly", threat = "lava", line = "a" }, "x", rng).fromAI, "unknown goal")
-	assert(not RoundLogic.fromAI({ goal = "survive", threat = "lava", line = string.rep("а", 200) }, "x", rng).fromAI, "long line")
+	assert(
+		not RoundLogic.fromAI({ goal = "survive", threat = "lava", line = string.rep("а", 200) }, "x", rng).fromAI,
+		"long line"
+	)
 
 	-- нечестная пара чинится, а не принимается
 	for _ = 1, 20 do
