@@ -140,7 +140,7 @@ function RoundService.run()
 		state("word", Config.Timing.WordPrompt, { winner = winner and winner.DisplayName })
 		word = WordService.ask(winner)
 		-- 3D-модель готовится в фоне; пока не готова — шар с подписью
-		ModelCache.request(word, winner)
+		ModelCache.request(word)
 		duration = math.max(Config.Timing.RoundMin, duration * Config.Timing.SpeedUp)
 	end
 end
