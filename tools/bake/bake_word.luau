@@ -1,9 +1,10 @@
--- Запекание слова: модуль-функция (WORD, KEY). В Studio (Edit) через MCP: положить в ServerStorage.BakeTool,
--- вызвать require(...)(word, key). Можно звать параллельно через task.spawn.
--- Генерирует модель (GenerationService) — или берёт уже сгенерированную ServerStorage.Bake.<KEY> — и шлёт
--- на receiver.py потоки <KEY>.<pos|uv|nrm|tex>.<N>: base64 кусками ≤ ~700 КБ (лимит тела запроса в Studio 1 МБ).
+-- Запекание слов: модуль-функция run({{word, key}, ...}) — все слова параллельно, возвращает «ok N: …» и «FAIL key(слово): ошибка».
+-- В Studio (Edit) через MCP: положить в ServerStorage.BakeTool, вызвать require(...)(jobs). Больше ~12 генераций
+-- в минуту GenerationService не даёт («Rate limit exceeded») — для больших партий см. очередь в README.
+-- Каждое слово: генерирует модель (GenerationService) — или берёт оставшуюся после сбоя ServerStorage.Bake.<KEY> —
+-- и шлёт на receiver.py потоки <KEY>.<pos|uv|nrm|tex>.<N>: base64 кусками ≤ ~700 КБ (лимит тела запроса в Studio 1 МБ).
 --   pos/nrm/uv — float32 по углам треугольников; tex — RGBA пиксели текстуры построчно.
--- Дальше: python tools/bake/build_glb.py <KEY> → <KEY>.glb → загрузка в Open Cloud как Model.
+-- Дальше: build_glb.py (слово или пакет) → загрузка в Open Cloud как Model.
 
 local CHUNK = 512 * 1024 -- байт до base64
 
@@ -27,18 +28,18 @@ local function post(name: string, data: buffer)
 	end
 end
 
-return function(WORD: string, KEY: string): string
-	local bake = ServerStorage:FindFirstChild("Bake") or Instance.new("Folder")
-	bake.Name = "Bake"
-	bake.Parent = ServerStorage
-	local model = bake:FindFirstChild(KEY)
+local function bake(WORD: string, KEY: string): string
+	local folder = ServerStorage:FindFirstChild("Bake") or Instance.new("Folder")
+	folder.Name = "Bake"
+	folder.Parent = ServerStorage
+	local model = folder:FindFirstChild(KEY)
 	if not model then
 		model = GenerationService:GenerateModelAsync(
 			{ TextPrompt = WORD, MaxTriangles = 2000 },
 			{ PredefinedSchema = "Body1" }
 		)
 		model.Name = KEY
-		model.Parent = bake
+		model.Parent = folder
 	end
 	local part = model:FindFirstChildWhichIsA("MeshPart", true)
 	assert(part, "no MeshPart")
@@ -74,8 +75,28 @@ return function(WORD: string, KEY: string): string
 	post(`{KEY}.uv`, uv)
 	post(`{KEY}.tex`, image:ReadPixelsBuffer(Vector2.zero, image.Size))
 
-	local w = image.Size.X
 	mesh:Destroy()
 	image:Destroy()
-	return `{KEY} {WORD}: {#faces} tris, tex {w}`
+	model:Destroy() -- выгружено; держать сотни моделей с текстурами 1024² в Studio — гигабайты памяти
+	return KEY
+end
+
+return function(jobs: { { string } }): string
+	local ok, fail, left = {}, {}, #jobs
+	for _, j in jobs do
+		task.spawn(function()
+			local good, r = pcall(bake, j[1], j[2])
+			if good then
+				table.insert(ok, j[2])
+			else
+				table.insert(fail, `{j[2]}({j[1]}): {r}`)
+			end
+			left -= 1
+		end)
+	end
+	while left > 0 do
+		task.wait(0.3)
+	end
+	table.sort(ok)
+	return `ok {#ok}: {table.concat(ok, " ")}` .. (if #fail > 0 then "\nFAIL " .. table.concat(fail, "\n") else "")
 end

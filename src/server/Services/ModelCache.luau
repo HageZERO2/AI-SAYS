@@ -22,16 +22,30 @@ folder.Parent = ServerStorage
 
 local pending: { [string]: boolean } = {}
 
--- Запечённые слова грузим при старте, параллельно (по очереди 30 штук — ~20 с, первый раунд не дождётся).
-for word, assetId in WordBank do
+-- Запечённые слова грузим при старте, параллельно (по очереди — десятки секунд, первый раунд не дождётся).
+-- Запись банка — либо assetId модели из одного слова, либо { pack, part }: пакет из многих слов,
+-- MeshPart внутри назван ключом part. Каждый ассет грузим один раз.
+local byAsset: { [number]: { [string]: string } } = {} -- assetId → имя MeshPart (или "" для одиночной) → слово
+for word, entry in WordBank do
+	local asset = if type(entry) == "number" then entry else entry.pack
+	local part = if type(entry) == "number" then "" else entry.part
+	byAsset[asset] = byAsset[asset] or {}
+	byAsset[asset][part] = word
+end
+for asset, parts in byAsset do
 	task.spawn(function()
-		local ok, model = pcall(InsertService.LoadAsset, InsertService, assetId)
-		local mesh = ok and model:FindFirstChildWhichIsA("BasePart", true)
-		if mesh then
-			mesh.Name = word
-			mesh.Parent = folder
-		else
-			warn("[ModelCache] не загрузился ассет слова", word, assetId, model)
+		local ok, model = pcall(InsertService.LoadAsset, InsertService, asset)
+		for part, word in parts do
+			local mesh = ok
+				and if part == ""
+					then model:FindFirstChildWhichIsA("BasePart", true)
+					else model:FindFirstChild(part, true)
+			if mesh and mesh:IsA("BasePart") then
+				mesh.Name = word
+				mesh.Parent = folder
+			else
+				warn("[ModelCache] не загрузилось слово", word, asset, part, if ok then "" else model)
+			end
 		end
 	end)
 end

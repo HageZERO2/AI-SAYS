@@ -44,7 +44,7 @@ src/
       Arena.luau                4 арены (school, kitchen, candy, space): общая сетка 16×16 плиток + тема и декор
       WordService.luau          слово победителя: проверка, фильтр Roblox
       Remotes.luau              список всех RemoteEvent и их аргументов
-    WordBank.luau               заранее запечённые слова: слово → assetId модели (делает tools/bake)
+    WordBank.luau               500 запечённых слов: слово → assetId модели или { pack, part } (делает tools/bake)
     Tests/RoundLogic.spec.luau  самопроверка, запускается при Play в Studio
   client/                       → StarterPlayerScripts.Client
     init.client.luau            HUD, ввод слова
