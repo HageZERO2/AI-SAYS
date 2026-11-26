@@ -57,7 +57,7 @@ wordBox.TextScaled = true
 wordBox.Font = Enum.Font.FredokaOne
 wordBox.ClearTextOnFocus = false
 wordBox.Visible = false
-Instance.new("UICorner", wordBox)
+Instance.new("UICorner").Parent = wordBox
 wordBox.Parent = gui
 
 gui.Parent = player:WaitForChild("PlayerGui")
