@@ -34,7 +34,7 @@ graph LR
   RoundService --> AIHost & Goals & Threats & Players & Arena & WordService & ModelCache & Remotes & Config
   AIHost --> RoundLogic & Config
   WordService --> RoundLogic & Config & Remotes
-  Goals --> Arena & Players & Config
+  Goals --> Arena & Players & Config & Remotes
   Threats --> Arena & Players & ModelCache
   ModelCache --> WordBank
   Players --> Arena
@@ -52,6 +52,7 @@ graph LR
   RS -- "State{phase, timeLeft, alive, round, streak, goal?}" --> C
   WS[WordService] -- "AskWord(seconds) — только победителю" --> C
   C -- "SubmitWord(word) → cleanWord + TextService-фильтр" --> WS
+  C -- "Push() — цель push; кого толкнуть, решает сервер (ближайший, кулдаун)" --> G[Goals.push]
 ```
 
 ## Один раунд

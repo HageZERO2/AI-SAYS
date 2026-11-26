@@ -34,7 +34,7 @@ src/
     Services/
       RoundService.luau         главный цикл раунда
       AIHost.luau               запрос к Text Generation API → JSON → Round
-      Goals.luau                цели: survive, reach_zone, freeze, collect
+      Goals.luau                цели: survive, reach_zone, freeze, collect, hide, push
       Threats.luau              угрозы: lava, falling, shrink, chaser, wind, darkness, gravity
       ModelCache.luau           3D-модель из слова: WordBank (ассеты) или GenerationService + кэш в памяти
       Players.luau              кто жив, кто на трибунах (атрибут Alive)
@@ -60,7 +60,7 @@ tools/bake/                     запекание слов в ассеты (Stu
 
 ### Правила кода
 
-- **Сервер решает всё.** Клиент только показывает `State`/`Announce` и шлёт `SubmitWord`. Слово принимается только от спрошенного игрока, один раз, после `cleanWord` и `TextService`-фильтра.
+- **Сервер решает всё.** Клиент только показывает `State`/`Announce` и шлёт `SubmitWord` и `Push` (без аргументов: кого толкнуть, решает сервер). Слово принимается только от спрошенного игрока, один раз, после `cleanWord` и `TextService`-фильтра.
 - **ИИ не пишет код и не решает правила.** Он выбирает `goal/threat/arena` из списка в `Config` и пишет фразу. `RoundLogic.fromAI` отбрасывает всё лишнее, нечестные пары (`Config.Incompatible`) заменяет.
 - **Резерв всегда.** Любая ошибка ИИ/TTS → `RoundLogic.fallback`, игра не останавливается.
 - Вылет — только через `Roster.eliminate(player, reason)`.

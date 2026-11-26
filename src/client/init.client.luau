@@ -1,6 +1,7 @@
 -- Клиент: HUD (приказ ведущего, таймер, живые), озвучка через TTS и поле ввода слова для победителя.
 -- Клиент ничего не решает — только показывает State/Announce и отправляет слово.
 
+local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -84,12 +85,36 @@ local PHASE = {
 	word = "Победитель выбирает слово… %d",
 }
 
+-- Толчок (цель push): E / кнопка геймпада / экранная кнопка на телефоне. Кого толкнуть, решает сервер.
+local pushBound = false
+local function setPush(on: boolean)
+	if on == pushBound then
+		return
+	end
+	pushBound = on
+	if on then
+		ContextActionService:BindAction("Push", function(_, inputState)
+			if inputState == Enum.UserInputState.Begin then
+				Remotes.Push:FireServer()
+			end
+			return Enum.ContextActionResult.Sink
+		end, true, Enum.KeyCode.E, Enum.KeyCode.ButtonX)
+		ContextActionService:SetTitle("Push", "Толк!")
+	else
+		ContextActionService:UnbindAction("Push")
+	end
+end
+
 Remotes.State.OnClientEvent:Connect(function(s)
 	local fmt = PHASE[s.phase] or ""
-	local me = if player:GetAttribute("Alive") then "ты в игре" else "ты на трибунах"
-	if s.goal == "collect" and player:GetAttribute("Alive") then
+	local alive = player:GetAttribute("Alive")
+	local me = if alive then "ты в игре" else "ты на трибунах"
+	if s.goal == "collect" and alive then
 		me = `звёзды {player:GetAttribute("Collected") or 0}/{Config.CollectTarget}`
+	elseif s.goal == "push" and alive then
+		me = if player:GetAttribute("Pushed") then "столкнул ✓" else "толкай: E"
 	end
+	setPush(s.phase == "round" and s.goal == "push" and alive == true)
 	info.Text =
 		`{string.format(fmt, s.timeLeft)} · живы: {s.alive} · раунд {s.round} · серия {s.streak} · {me}`
 end)

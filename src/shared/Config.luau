@@ -6,7 +6,7 @@ local Config = {}
 Config.AI_PREFIX = "ИИ говорит:"
 Config.AI_PREFIX_VOICE = "AI says:" -- голос английский: Roblox TTS не умеет русский
 
-Config.Goals = { "survive", "reach_zone", "freeze", "collect" } -- из 6 в дизайне
+Config.Goals = { "survive", "reach_zone", "freeze", "collect", "hide", "push" } -- все 6 из дизайна
 -- все 7 угроз из дизайна
 Config.Threats = { "lava", "falling", "shrink", "chaser", "wind", "darkness", "gravity" }
 Config.Arenas = { "school" } -- одна арена в неделю 1
@@ -18,9 +18,16 @@ Config.Incompatible = {
 	reach_zone = { "lava" },
 	collect = { "lava" },
 	survive = { "darkness" },
+	hide = { "lava", "shrink" }, -- навесы стоят на полу: лава и исчезающие плитки делают цель невыполнимой
 }
 
 Config.CollectTarget = 3 -- сколько предметов собрать в цели collect
+Config.Push = {
+	Range = 8, -- толкаем ближайшего живого в этом радиусе (стады)
+	Cooldown = 1, -- сек между толчками
+	Speed = 90, -- горизонтальная скорость, которую получает толкнутый
+	Credit = 4, -- сек: вылетел за это время после толчка — засчитано толкнувшему
+}
 
 -- Готовые фразы для резерва без ИИ. %s = слово победителя.
 Config.FallbackLines = {
@@ -28,6 +35,8 @@ Config.FallbackLines = {
 	reach_zone = "добегите до зелёной зоны, пока не поздно — %s уже идут!",
 	freeze = "замрите! Кто шевельнётся — встретится с %s!",
 	collect = "соберите 3 звезды, пока %s не собрали вас!",
+	hide = "спрячьтесь под навесом! Кто останется снаружи — достанется %s!",
+	push = "столкните кого-нибудь с арены! Кто никого не столкнёт — отдам его %s!",
 }
 -- Голос резерва (английский, без слова: русское слово TTS пропускает).
 Config.FallbackVoice = {
@@ -35,6 +44,8 @@ Config.FallbackVoice = {
 	reach_zone = "Run to the green zone before it is too late!",
 	freeze = "Freeze! Whoever moves is out!",
 	collect = "Collect three stars before time runs out!",
+	hide = "Hide under a shelter! Whoever stays outside is out!",
+	push = "Push someone off the arena! Whoever pushes nobody is out!",
 }
 Config.TrapLines =
 	{ -- ловушки: звучат БЕЗ «ИИ говорит», выполнять нельзя. { текст, голос }

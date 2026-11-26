@@ -3,6 +3,7 @@
 --   State      S→C  (state: {phase, timeLeft, alive, round, goal?, threat?})
 --   AskWord    S→C  (seconds: number) — только победителю
 --   SubmitWord C→S  (word: string)    — валидируется в WordService
+--   Push       C→S  ()                — толчок в цели push; цель выбирает сервер (Goals.push)
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -21,6 +22,7 @@ local Remotes = {
 	State = remote("State"),
 	AskWord = remote("AskWord"),
 	SubmitWord = remote("SubmitWord"),
+	Push = remote("Push"),
 }
 
 folder.Parent = ReplicatedStorage
