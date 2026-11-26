@@ -21,7 +21,7 @@ Roblox-игра «Саймон говорит» с ИИ-ведущим. Диза
 
 - Имена бета-API сверены с API-дампом (github.com/MaximumADHD/Roblox-Client-Tracker, Mini-API-Dump.json), но живьём не проверены; всё в pcall: `TextGenerator:GenerateTextAsync` (AIHost), `AudioTextToSpeech` (client/Voice), `GenerationService:GenerateMeshAsync` (ModelCache). При `warn` в Output — сверить с create.roblox.com/docs и починить.
 - Сила ветра (`Threats.wind`, `* 70`) подобрана наугад.
-- `rojo plugin install` у владельца падает с os error 3 (Rojo не находит Studio) — плагин ставить из Creator Store.
+- «os error 3» у владельца — пустой шим Rokit (`~/.rokit/bin/rojo` в PATH раньше Aftman). Запускать `%USERPROFILE%\.aftman\bin\rojo serve`. Плагин — только из Creator Store; версия сервера в `aftman.toml` должна совпадать с ним (сейчас 7.7.1). Вторую копию плагина (`rojo plugin install`) не ставить — две копии ломают Connect.
 
 ## Правила кода
 
