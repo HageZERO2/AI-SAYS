@@ -24,7 +24,8 @@ if not ok then
 end
 
 function Voice.say(text: string)
-	if not tts then
+	-- Кириллица: TTS её не синтезирует, а движок пишет «Failed to load sound : InvalidText» на каждую фразу
+	if not tts or string.find(text, "[\208\209]") then
 		return
 	end
 	-- У AudioTextToSpeech нет Stop(): Pause + сброс позиции. LoadAsync ждёт синтеза, поэтому в отдельном потоке.
