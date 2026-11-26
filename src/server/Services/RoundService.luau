@@ -78,9 +78,9 @@ end
 
 local function playRound(word: string, duration: number, round: RoundLogic.Round): Player?
 	roundNumber += 1
-	print(`[Round {roundNumber}] {round.goal}+{round.threat} word={word} ai={round.fromAI}`)
+	print(`[Round {roundNumber}] {round.goal}+{round.threat} @{round.arena} word={word} ai={round.fromAI}`)
 
-	Arena.build()
+	Arena.build(round.arena)
 	for _, p in PlayersService:GetPlayers() do
 		p:SetAttribute("LastOut", nil)
 	end

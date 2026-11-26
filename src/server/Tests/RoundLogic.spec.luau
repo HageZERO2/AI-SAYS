@@ -72,6 +72,10 @@ return function()
 	for _, t in Config.Threats do
 		assert(type(Threats[t]) == "function", "no Threats." .. t)
 	end
+	local Arena = require(Services.Arena)
+	for _, a in Config.Arenas do
+		assert(Arena.Themes[a], "no Arena theme: " .. a)
+	end
 
 	-- банк слов: ключи в том виде, в каком слово приходит от игрока; случайные слова всегда с моделью
 	local WordBank = require(script.Parent.Parent.WordBank)

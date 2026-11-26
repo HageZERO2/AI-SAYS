@@ -14,7 +14,7 @@ Roblox-игра «Саймон говорит» с ИИ-ведущим. Диза
 
 - Код живёт в `src/` и синхронизируется в Studio через Rojo (`rojo serve`, плагин Rojo → Connect). **Правь файлы в `src/`, не скрипты в Studio** — правки в Studio не попадут в git.
 - Через Roblox Studio MCP: запускать Play, читать Output, смотреть иерархию, проверять поведение. Код через MCP запускать только для проверок, не для постоянных изменений.
-- После Play в Output должно быть `[Tests] RoundLogic OK` и строки `[Round N] goal+threat word=… ai=true|false`.
+- После Play в Output должно быть `[Tests] RoundLogic OK` и строки `[Round N] goal+threat @arena word=… ai=true|false`.
 - Арена строится кодом (`Services/Arena.luau`), `.rbxl` в git не храним.
 
 ## Открытые вопросы (проверить в Studio первым делом)

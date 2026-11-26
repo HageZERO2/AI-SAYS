@@ -9,7 +9,7 @@ Config.AI_PREFIX_VOICE = "AI says:" -- голос английский: Roblox T
 Config.Goals = { "survive", "reach_zone", "freeze", "collect", "hide", "push" } -- все 6 из дизайна
 -- все 7 угроз из дизайна
 Config.Threats = { "lava", "falling", "shrink", "chaser", "wind", "darkness", "gravity" }
-Config.Arenas = { "school" } -- одна арена в неделю 1
+Config.Arenas = { "school", "kitchen", "candy", "space" } -- темы в Services/Arena (THEMES)
 
 -- Нечестные или скучные пары цель+угроза (сервер не даст ИИ их собрать).
 -- Лава заливает пол; замереть нельзя, если тебя сдувает, гонят или пол исчезает; темнота сама по себе не опасна.

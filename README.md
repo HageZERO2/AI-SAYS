@@ -38,7 +38,7 @@ src/
       Threats.luau              угрозы: lava, falling, shrink, chaser, wind, darkness, gravity
       ModelCache.luau           3D-модель из слова: WordBank (ассеты) или GenerationService + кэш в памяти
       Players.luau              кто жив, кто на трибунах (атрибут Alive)
-      Arena.luau                строит арену из плиток + трибуны
+      Arena.luau                4 арены (school, kitchen, candy, space): общая сетка плиток + тема и декор
       WordService.luau          слово победителя: проверка, фильтр Roblox
       Remotes.luau              список всех RemoteEvent и их аргументов
     WordBank.luau               заранее запечённые слова: слово → assetId модели (делает tools/bake)
