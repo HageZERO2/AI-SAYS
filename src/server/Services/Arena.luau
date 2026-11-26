@@ -159,6 +159,8 @@ local THEMES: { [string]: Theme } = {
 				end
 			end
 			prop("робот", 14, CFrame.new(-HALF - 10, TOP + 4, -HALF - 14) * CFrame.Angles(0, math.rad(30), 0))
+			prop("глобус", 9, CFrame.new(HALF + 22, TOP + 12, -HALF - 6))
+			prop("автобус", 34, CFrame.new(-HALF - 34, TOP - 6, HALF - 6) * CFrame.Angles(0, math.rad(-70), 0))
 		end,
 	},
 	-- Кухня: шахматный пол, холодильник, плита с конфорками, шкафы, еда.
@@ -220,6 +222,9 @@ local THEMES: { [string]: Theme } = {
 			prop("арбузы", 12, CFrame.new(-HALF - 18, TOP + 7, -HALF + 17))
 			prop("бананы", 9, CFrame.new(-HALF - 18, TOP + 6, -HALF + 39))
 			prop("огурцы", 9, CFrame.new(-HALF - 18, TOP + 6, -HALF + 28))
+			prop("тостер", 8, CFrame.new(-HALF - 18, TOP + 5, -HALF + 50))
+			prop("чайник", 8, CFrame.new(HALF + 20, TOP + 6, 6))
+			prop("кастрюля", 9, CFrame.new(HALF + 20, TOP + 6, 16))
 		end,
 	},
 	-- Конфетная страна: розовый пол, леденцы, карамельные трости, сладости.
@@ -285,6 +290,8 @@ local THEMES: { [string]: Theme } = {
 			prop("пончики", 14, CFrame.new(-HALF - 20, TOP + 2, -HALF + 14) * CFrame.Angles(math.rad(70), 0, 0))
 			prop("мороженое", 16, CFrame.new(HALF + 20, TOP + 4, -HALF + 18))
 			prop("торт", 18, CFrame.new(0, TOP - 2, -HALF - 26))
+			prop("пряник", 18, CFrame.new(HALF + 24, TOP + 2, HALF - 10) * CFrame.Angles(0, math.rad(-120), 0))
+			prop("кекс", 13, CFrame.new(-HALF - 22, TOP + 1, HALF - 14))
 		end,
 	},
 	-- Космос: тёмный пол с неоновым краем, ночь со звёздами, планеты, ракета.
@@ -345,6 +352,17 @@ local THEMES: { [string]: Theme } = {
 			end
 			prop("ракета", 28, CFrame.new(HALF + 22, TOP + 8, -HALF - 6) * CFrame.Angles(0, 0, math.rad(-15)))
 			prop("робот", 10, CFrame.new(-HALF - 16, TOP + 2, -HALF - 8))
+			prop(
+				"астронавт",
+				12,
+				CFrame.new(-HALF - 26, TOP + 14, 4) * CFrame.Angles(math.rad(20), math.rad(60), math.rad(25))
+			)
+			prop("нло", 22, CFrame.new(26, TOP + 38, -HALF - 40) * CFrame.Angles(math.rad(10), 0, 0))
+			prop(
+				"спутник",
+				14,
+				CFrame.new(HALF + 32, TOP + 26, 22) * CFrame.Angles(0, math.rad(40), math.rad(20))
+			)
 		end,
 	},
 }
