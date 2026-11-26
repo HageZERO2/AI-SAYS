@@ -34,8 +34,9 @@ src/
     Services/
       RoundService.luau         главный цикл раунда
       AIHost.luau               запрос к Text Generation API → JSON → Round
-      Goals.luau                цели: survive, reach_zone, freeze
-      Threats.luau              угрозы: lava, falling, shrink
+      Goals.luau                цели: survive, reach_zone, freeze, collect
+      Threats.luau              угрозы: lava, falling, shrink, chaser, wind, darkness, gravity
+      ModelCache.luau           3D-модель из слова (GenerationService) + кэш в памяти
       Players.luau              кто жив, кто на трибунах (атрибут Alive)
       Arena.luau                строит арену из плиток + трибуны
       WordService.luau          слово победителя: проверка, фильтр Roblox

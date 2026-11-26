@@ -5,21 +5,28 @@ local Config = {}
 
 Config.AI_PREFIX = "ИИ говорит:"
 
-Config.Goals = { "survive", "reach_zone", "freeze" } -- MVP неделя 1 (из 6 в дизайне)
-Config.Threats = { "lava", "falling", "shrink" } -- MVP неделя 1 (из 7 в дизайне)
+Config.Goals = { "survive", "reach_zone", "freeze", "collect" } -- из 6 в дизайне
+-- все 7 угроз из дизайна
+Config.Threats = { "lava", "falling", "shrink", "chaser", "wind", "darkness", "gravity" }
 Config.Arenas = { "school" } -- одна арена в неделю 1
 
--- Нечестные пары цель+угроза (сервер не даст ИИ их собрать): лава заливает пол, на сжатии нельзя замереть.
+-- Нечестные или скучные пары цель+угроза (сервер не даст ИИ их собрать).
+-- Лава заливает пол; замереть нельзя, если тебя сдувает, гонят или пол исчезает; темнота сама по себе не опасна.
 Config.Incompatible = {
-	freeze = { "lava", "shrink" },
+	freeze = { "lava", "shrink", "wind", "chaser" },
 	reach_zone = { "lava" },
+	collect = { "lava" },
+	survive = { "darkness" },
 }
+
+Config.CollectTarget = 3 -- сколько предметов собрать в цели collect
 
 -- Готовые фразы для резерва без ИИ. %s = слово победителя.
 Config.FallbackLines = {
 	survive = "выживите до конца таймера, пока %s пытаются вас достать!",
 	reach_zone = "добегите до зелёной зоны, пока не поздно — %s уже идут!",
 	freeze = "замрите! Кто шевельнётся — встретится с %s!",
+	collect = "соберите 3 звезды, пока %s не собрали вас!",
 }
 Config.TrapLines = { -- ловушки: звучат БЕЗ «ИИ говорит», выполнять нельзя
 	"Прыгайте! Пол — это желе!",

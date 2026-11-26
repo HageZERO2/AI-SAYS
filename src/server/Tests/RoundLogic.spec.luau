@@ -44,5 +44,22 @@ return function()
 	assert(RoundLogic.cleanWord("123") == nil, "digits")
 	assert(RoundLogic.cleanWord(42) == nil, "non-string")
 
+	-- Config согласован с обработчиками: забыть функцию или фразу = упасть при первом таком раунде
+	local Services = script.Parent.Parent.Services
+	local Goals = require(Services.Goals)
+	local Threats = require(Services.Threats)
+	for _, g in Config.Goals do
+		assert(type(Goals[g]) == "function", "no Goals." .. g)
+		assert(Config.FallbackLines[g], "no FallbackLines." .. g)
+		local fair = 0
+		for _, t in Config.Threats do
+			fair += if RoundLogic.isFair(g, t) then 1 else 0
+		end
+		assert(fair > 0, "goal without fair threats: " .. g)
+	end
+	for _, t in Config.Threats do
+		assert(type(Threats[t]) == "function", "no Threats." .. t)
+	end
+
 	print("[Tests] RoundLogic OK")
 end

@@ -5,6 +5,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
+local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 local player = Players.LocalPlayer
 
@@ -84,6 +85,9 @@ local PHASE = {
 Remotes.State.OnClientEvent:Connect(function(s)
 	local fmt = PHASE[s.phase] or ""
 	local me = if player:GetAttribute("Alive") then "ты в игре" else "ты на трибунах"
+	if s.goal == "collect" and player:GetAttribute("Alive") then
+		me = `звёзды {player:GetAttribute("Collected") or 0}/{Config.CollectTarget}`
+	end
 	info.Text =
 		`{string.format(fmt, s.timeLeft)} · живы: {s.alive} · раунд {s.round} · серия {s.streak} · {me}`
 end)

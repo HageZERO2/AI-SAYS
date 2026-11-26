@@ -1,6 +1,10 @@
 -- Цели раунда. Каждая: start(ctx) -> finish(), finish() выбивает тех, кто цель не выполнил.
 -- Новая цель = функция здесь + строка в Config.Goals + фраза в Config.FallbackLines.
 
+local PlayersService = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
 local Arena = require(script.Parent.Arena)
 local Roster = require(script.Parent.Players)
 
@@ -52,6 +56,47 @@ function Goals.freeze(_ctx: Ctx): () -> ()
 	end)
 	return function()
 		active = false
+	end
+end
+
+function Goals.collect(ctx: Ctx): () -> ()
+	local target = Config.CollectTarget
+	local alive = Roster.alive()
+	for _, p in alive do
+		p:SetAttribute("Collected", 0)
+	end
+	-- Звёзд меньше, чем нужно всем: кто-то не успеет.
+	local count = math.max(target, math.floor(#alive * target * 0.75))
+	local stars = {}
+	for _ = 1, count do
+		local star = Instance.new("Part")
+		star.Name = "Star"
+		star.Anchored = true
+		star.CanCollide = false
+		star.Material = Enum.Material.Neon
+		star.Color = Color3.fromRGB(255, 220, 40)
+		star.Size = Vector3.new(2, 2, 2)
+		star.Position = Arena.randomFloorPoint(ctx.rng)
+		star.Touched:Connect(function(hit)
+			local model = hit:FindFirstAncestorOfClass("Model")
+			local p = model and PlayersService:GetPlayerFromCharacter(model)
+			if p and Roster.isAlive(p) and star.Parent then
+				star:Destroy()
+				p:SetAttribute("Collected", (p:GetAttribute("Collected") or 0) + 1)
+			end
+		end)
+		star.Parent = Arena.folder()
+		table.insert(stars, star)
+	end
+	return function()
+		for _, p in Roster.alive() do
+			if (p:GetAttribute("Collected") or 0) < target then
+				Roster.eliminate(p, "collect")
+			end
+		end
+		for _, star in stars do
+			star:Destroy()
+		end
 	end
 end
 

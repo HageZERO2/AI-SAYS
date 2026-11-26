@@ -7,6 +7,7 @@ local Config = require(ReplicatedStorage.Shared.Config)
 local AIHost = require(script.Parent.AIHost)
 local Arena = require(script.Parent.Arena)
 local Goals = require(script.Parent.Goals)
+local ModelCache = require(script.Parent.ModelCache)
 local Remotes = require(script.Parent.Remotes)
 local Roster = require(script.Parent.Players)
 local Threats = require(script.Parent.Threats)
@@ -138,6 +139,8 @@ function RoundService.run()
 		local winner = playRound(word, duration)
 		state("word", Config.Timing.WordPrompt, { winner = winner and winner.DisplayName })
 		word = WordService.ask(winner)
+		-- 3D-модель готовится в фоне; пока не готова — шар с подписью
+		ModelCache.request(word, winner)
 		duration = math.max(Config.Timing.RoundMin, duration * Config.Timing.SpeedUp)
 	end
 end
