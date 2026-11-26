@@ -1,10 +1,13 @@
--- 3D-объект из слова (Cube 3D, GenerationService). Генерация идёт 20–40 с, поэтому:
---   request(word)         — запускаем, как только победитель выбрал слово;
---   get(word)             — копия модели, если уже готова, иначе nil (угроза возьмёт шар с подписью).
--- GenerationService:GenerateModelAsync(inputs, schema) — проверено живьём в Studio.
--- shortcut: кэш живёт только в памяти сервера; неделя 3 — сохранять ассеты слов в DataStore и сгенерировать 500 слов заранее.
+-- 3D-объект из слова. Два источника:
+--   WordBank — заранее запечённые слова (ассеты, tools/bake): грузятся при старте сервера, готовы сразу;
+--   GenerationService:GenerateModelAsync — новое слово, ~18 с, живёт в памяти сервера до его закрытия.
+--   request(word) — запускаем, как только победитель выбрал слово;
+--   get(word)     — копия модели, если уже готова, иначе nil (угроза возьмёт шар с подписью).
 
+local InsertService = game:GetService("InsertService")
 local ServerStorage = game:GetService("ServerStorage")
+
+local WordBank = require(script.Parent.Parent.WordBank)
 
 local ModelCache = {}
 
@@ -19,8 +22,22 @@ folder.Parent = ServerStorage
 
 local pending: { [string]: boolean } = {}
 
+-- Запечённые слова грузим при старте, параллельно (по очереди 30 штук — ~20 с, первый раунд не дождётся).
+for word, assetId in WordBank do
+	task.spawn(function()
+		local ok, model = pcall(InsertService.LoadAsset, InsertService, assetId)
+		local mesh = ok and model:FindFirstChildWhichIsA("BasePart", true)
+		if mesh then
+			mesh.Name = word
+			mesh.Parent = folder
+		else
+			warn("[ModelCache] не загрузился ассет слова", word, assetId, model)
+		end
+	end)
+end
+
 function ModelCache.request(word: string)
-	if not okService or pending[word] or folder:FindFirstChild(word) then
+	if not okService or WordBank[word] or pending[word] or folder:FindFirstChild(word) then
 		return
 	end
 	pending[word] = true

@@ -73,5 +73,14 @@ return function()
 		assert(type(Threats[t]) == "function", "no Threats." .. t)
 	end
 
+	-- банк слов: ключи в том виде, в каком слово приходит от игрока; случайные слова всегда с моделью
+	local WordBank = require(script.Parent.Parent.WordBank)
+	for word in WordBank do
+		assert(RoundLogic.cleanWord(word) == word, "WordBank key not clean: " .. word)
+	end
+	for _, word in Config.DefaultWords do
+		assert(WordBank[word], "DefaultWords not baked: " .. word)
+	end
+
 	print("[Tests] RoundLogic OK")
 end

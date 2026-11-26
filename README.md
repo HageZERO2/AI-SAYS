@@ -36,15 +36,17 @@ src/
       AIHost.luau               запрос к Text Generation API → JSON → Round
       Goals.luau                цели: survive, reach_zone, freeze, collect
       Threats.luau              угрозы: lava, falling, shrink, chaser, wind, darkness, gravity
-      ModelCache.luau           3D-модель из слова (GenerationService) + кэш в памяти
+      ModelCache.luau           3D-модель из слова: WordBank (ассеты) или GenerationService + кэш в памяти
       Players.luau              кто жив, кто на трибунах (атрибут Alive)
       Arena.luau                строит арену из плиток + трибуны
       WordService.luau          слово победителя: проверка, фильтр Roblox
       Remotes.luau              список всех RemoteEvent и их аргументов
+    WordBank.luau               заранее запечённые слова: слово → assetId модели (делает tools/bake)
     Tests/RoundLogic.spec.luau  самопроверка, запускается при Play в Studio
   client/                       → StarterPlayerScripts.Client
     init.client.luau            HUD, ввод слова
     Voice.luau                  озвучка ведущего (AudioTextToSpeech)
+tools/bake/                     запекание слов в ассеты (Studio → GLB → Open Cloud), см. README там
 ```
 
 ### Цикл раунда

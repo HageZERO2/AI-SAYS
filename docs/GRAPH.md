@@ -36,6 +36,7 @@ graph LR
   WordService --> RoundLogic & Config & Remotes
   Goals --> Arena & Players & Config
   Threats --> Arena & Players & ModelCache
+  ModelCache --> WordBank
   Players --> Arena
   RoundLogic --> Config
   initc --> Voice & Config
