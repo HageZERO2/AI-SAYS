@@ -73,11 +73,26 @@ local LIGHT = {
 	OutdoorAmbient = Lighting.OutdoorAmbient,
 }
 
+-- Дымка и постобработка: создаются один раз, тема меняет только цвета/плотность дымки.
+-- При Atmosphere туман Lighting.Fog* не работает — угроза darkness сгущает дымку сама.
+local atmosphere = Instance.new("Atmosphere")
+atmosphere.Parent = Lighting
+local bloom = Instance.new("BloomEffect") -- неон светится: лава, зона, звёзды, охотник, рамка космоса
+bloom.Intensity = 0.45 -- сильнее — красное предупреждение сжатия и лава заливают весь экран
+bloom.Size = 20
+bloom.Threshold = 0.95
+bloom.Parent = Lighting
+local grade = Instance.new("ColorCorrectionEffect")
+grade.Saturation = 0.15
+grade.Contrast = 0.08
+grade.Parent = Lighting
+
 type Theme = {
 	tiles: { Color3 }, -- шахматка из двух цветов
 	material: Enum.Material,
 	stands: Color3,
 	light: { [string]: any }?,
+	atmo: { Color: Color3, Decay: Color3, Density: number, Haze: number, Glare: number },
 	decor: () -> (),
 }
 
@@ -87,6 +102,7 @@ local THEMES: { [string]: Theme } = {
 		tiles = { rgb(230, 230, 235), rgb(200, 205, 215) },
 		material = Enum.Material.SmoothPlastic,
 		stands = rgb(70, 80, 110),
+		atmo = { Color = rgb(200, 220, 255), Decay = rgb(110, 140, 190), Density = 0.3, Haze = 1, Glare = 0.3 },
 		decor = function()
 			local board = deco({
 				Size = Vector3.new(54, 22, 1),
@@ -150,6 +166,7 @@ local THEMES: { [string]: Theme } = {
 		tiles = { rgb(245, 245, 245), rgb(40, 40, 45) },
 		material = Enum.Material.Marble,
 		stands = rgb(170, 70, 50),
+		atmo = { Color = rgb(255, 225, 190), Decay = rgb(200, 140, 90), Density = 0.32, Haze = 1.5, Glare = 0.5 },
 		decor = function()
 			local fridge = deco({
 				Size = Vector3.new(24, 44, 14),
@@ -211,6 +228,7 @@ local THEMES: { [string]: Theme } = {
 		material = Enum.Material.SmoothPlastic,
 		stands = rgb(140, 90, 200),
 		light = { Ambient = rgb(150, 120, 140), OutdoorAmbient = rgb(170, 140, 160) },
+		atmo = { Color = rgb(255, 200, 230), Decay = rgb(220, 130, 200), Density = 0.35, Haze = 2, Glare = 0.6 },
 		decor = function()
 			local colors =
 				{ rgb(255, 80, 120), rgb(90, 200, 255), rgb(255, 210, 60), rgb(130, 230, 120), rgb(200, 120, 255) }
@@ -275,6 +293,7 @@ local THEMES: { [string]: Theme } = {
 		material = Enum.Material.SmoothPlastic,
 		stands = rgb(60, 60, 90),
 		light = { ClockTime = 0, Ambient = rgb(140, 140, 170), OutdoorAmbient = rgb(140, 140, 170), Brightness = 2 },
+		atmo = { Color = rgb(90, 70, 160), Decay = rgb(40, 20, 90), Density = 0.25, Haze = 0.5, Glare = 0 },
 		decor = function()
 			local S = Arena.Size
 			for _, e in { { 0, -HALF, S, 0.4 }, { 0, HALF, S, 0.4 }, { -HALF, 0, 0.4, S }, { HALF, 0, 0.4, S } } do
@@ -339,6 +358,9 @@ function Arena.build(name: string?)
 	local theme = THEMES[name or "school"] or THEMES.school
 	for k, v in LIGHT do
 		(Lighting :: any)[k] = if theme.light and theme.light[k] ~= nil then theme.light[k] else v
+	end
+	for k, v in theme.atmo do
+		(atmosphere :: any)[k] = v
 	end
 	folder = Instance.new("Folder")
 	folder.Name = "Arena"

@@ -9,6 +9,7 @@ local Config = require(ReplicatedStorage.Shared.Config)
 local Arena = require(script.Parent.Arena)
 local Roster = require(script.Parent.Players)
 local Remotes = require(script.Parent.Remotes)
+local Vfx = require(script.Parent.Vfx)
 
 type Ctx = { word: string, duration: number, rng: Random }
 
@@ -29,6 +30,7 @@ function Goals.reach_zone(ctx: Ctx): () -> ()
 	zone.Size = Vector3.new(10, 1, 10)
 	zone.Position = Vector3.new(0, Arena.FloorY + 0.6, 0) -- центр: не исчезает при сжатии пола
 		+ Vector3.new(ctx.rng:NextNumber(-3, 3), 0, ctx.rng:NextNumber(-3, 3))
+	Vfx.attach(zone, "zone")
 	zone.Parent = Arena.folder()
 	return function()
 		for _, p in Roster.alive() do
@@ -83,10 +85,12 @@ function Goals.collect(ctx: Ctx): () -> ()
 			local model = hit:FindFirstAncestorOfClass("Model")
 			local p = model and PlayersService:GetPlayerFromCharacter(model)
 			if p and Roster.isAlive(p) and star.Parent then
+				Vfx.burst("sparkle", star.Position, star.Color)
 				star:Destroy()
 				p:SetAttribute("Collected", (p:GetAttribute("Collected") or 0) + 1)
 			end
 		end)
+		Vfx.attach(star, "star")
 		star.Parent = Arena.folder()
 		table.insert(stars, star)
 	end
@@ -191,6 +195,7 @@ function Goals.push(_ctx: Ctx): () -> ()
 		if best and o then
 			local flat = (o.Position - r.Position) * Vector3.new(1, 0, 1)
 			knock(o, if flat.Magnitude > 0.1 then flat.Unit else r.CFrame.LookVector)
+			Vfx.burst("push", o.Position - Vector3.new(0, 2, 0), Color3.fromRGB(90, 220, 255))
 			knocked[best] = { by = p, t = now }
 		end
 	end)

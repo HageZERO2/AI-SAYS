@@ -3,6 +3,7 @@
 local PlayersService = game:GetService("Players")
 
 local Arena = require(script.Parent.Arena)
+local Vfx = require(script.Parent.Vfx)
 
 local Roster = {}
 local rng = Random.new()
@@ -35,6 +36,7 @@ function Roster.eliminate(player: Player, reason: string)
 	player:SetAttribute("LastOut", reason)
 	local r = root(player)
 	if r then
+		Vfx.burst("poof", r.Position, Color3.fromRGB(255, 90, 90))
 		r.AssemblyLinearVelocity = Vector3.zero
 		r.CFrame = Arena.standsPoint(rng)
 	end

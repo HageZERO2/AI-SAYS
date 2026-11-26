@@ -5,6 +5,7 @@ local PlayersService = game:GetService("Players")
 
 local Arena = require(script.Parent.Arena)
 local Roster = require(script.Parent.Players)
+local Vfx = require(script.Parent.Vfx)
 
 type Ctx = { word: string, duration: number, rng: Random }
 
@@ -86,6 +87,7 @@ function Twists.leader(ctx: Ctx): () -> ()
 	label.Text = `охотится на {target.DisplayName}`
 	label.Parent = tag
 	tag.Parent = hunter
+	Vfx.attach(hunter, "flame")
 	hunter.Parent = Arena.folder()
 
 	local active = true

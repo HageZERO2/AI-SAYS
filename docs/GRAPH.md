@@ -38,6 +38,8 @@ graph LR
   Threats --> Arena & Players & ModelCache
   Twists --> Arena & Players
   Traps --> Arena & Players
+  Players & Threats & Goals & Twists & RoundService --> Vfx
+  Vfx --> Remotes
   ModelCache --> WordBank
   Players --> Arena
   RoundLogic --> Config
@@ -54,6 +56,7 @@ graph LR
   RS -- "State{phase, timeLeft, alive, round, streak, goal?}" --> C
   WS[WordService] -- "AskWord(seconds) — только победителю" --> C
   C -- "SubmitWord(word) → cleanWord + TextService-фильтр" --> WS
+  VX[Vfx] -- "Vfx(kind, pos, color?) — короткий эффект" --> C
   C -- "Push() — цель push; кого толкнуть, решает сервер (ближайший, кулдаун)" --> G[Goals.push]
 ```
 

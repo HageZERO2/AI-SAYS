@@ -14,6 +14,7 @@ local Roster = require(script.Parent.Players)
 local Threats = require(script.Parent.Threats)
 local Traps = require(script.Parent.Traps)
 local Twists = require(script.Parent.Twists)
+local Vfx = require(script.Parent.Vfx)
 local WordService = require(script.Parent.WordService)
 
 local RoundService = {}
@@ -109,6 +110,10 @@ local function playRound(word: string, duration: number, round: RoundLogic.Round
 	local survivors = Roster.alive()
 	for _, p in survivors do
 		p:SetAttribute("Wins", (p:GetAttribute("Wins") or 0) + 1)
+		local r = Roster.root(p)
+		if r then
+			Vfx.burst("confetti", r.Position + Vector3.new(0, 3, 0))
+		end
 	end
 	streak = if #survivors > 0 then streak + 1 else 0
 	if #survivors == 0 then

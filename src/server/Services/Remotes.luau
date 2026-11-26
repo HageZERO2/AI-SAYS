@@ -4,6 +4,7 @@
 --   AskWord    S→C  (seconds: number) — только победителю
 --   SubmitWord C→S  (word: string)    — валидируется в WordService
 --   Push       C→S  ()                — толчок в цели push; цель выбирает сервер (Goals.push)
+--   Vfx        S→C  (kind, pos, color?) — короткий эффект, рисует client/Vfx (Services/Vfx.burst)
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -23,6 +24,7 @@ local Remotes = {
 	AskWord = remote("AskWord"),
 	SubmitWord = remote("SubmitWord"),
 	Push = remote("Push"),
+	Vfx = remote("Vfx"),
 }
 
 folder.Parent = ReplicatedStorage

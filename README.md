@@ -36,6 +36,7 @@ src/
       AIHost.luau               запрос к Text Generation API → JSON → Round
       Goals.luau                цели: survive, reach_zone, freeze, collect, hide, push
       Threats.luau              угрозы: lava, falling, shrink, chaser, wind, darkness, gravity
+      Vfx.luau                  эффекты: burst → клиенту (Remotes.Vfx), attach — постоянные на объекте
       Traps.luau                ловушки без «ИИ говорит»: jump, move, chat, tile
       Twists.luau               подвохи: reverse (управление наоборот), tiny, leader (охотник за лидером)
       ModelCache.luau           3D-модель из слова: WordBank (ассеты) или GenerationService + кэш в памяти
@@ -48,6 +49,7 @@ src/
   client/                       → StarterPlayerScripts.Client
     init.client.luau            HUD, ввод слова
     Voice.luau                  озвучка ведущего (AudioTextToSpeech)
+    Vfx.luau                    короткие эффекты по Remotes.Vfx (дым, искры, кольца, конфетти)
 tools/bake/                     запекание слов в ассеты (Studio → GLB → Open Cloud), см. README там
 ```
 

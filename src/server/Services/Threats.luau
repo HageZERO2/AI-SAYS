@@ -4,10 +4,12 @@
 local Debris = game:GetService("Debris")
 local Lighting = game:GetService("Lighting")
 local PlayersService = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 
 local Arena = require(script.Parent.Arena)
 local ModelCache = require(script.Parent.ModelCache)
 local Roster = require(script.Parent.Players)
+local Vfx = require(script.Parent.Vfx)
 
 export type Ctx = { word: string, duration: number, rng: Random }
 
@@ -28,6 +30,7 @@ function Threats.lava(ctx: Ctx): () -> ()
 	lava.Size = Vector3.new(Arena.Size + 40, 4, Arena.Size + 40)
 	local startY, endY = Arena.FloorY - 6, Arena.FloorY + 6
 	lava.Position = Vector3.new(0, startY, 0)
+	Vfx.attach(lava, "lava")
 	lava.Parent = Arena.folder()
 	-- Лава поднимается выше пола: спастись можно только на столбах.
 	local pillars = {}
@@ -102,10 +105,14 @@ function Threats.falling(ctx: Ctx): () -> ()
 			drop.Name = "Falling"
 			drop.Anchored = false
 			drop.Position = Arena.randomFloorPoint(ctx.rng) + Vector3.new(0, 45, 0)
+			local landed = false
 			drop.Touched:Connect(function(hit)
 				local p = playerFromHit(hit)
 				if p then
 					Roster.eliminate(p, "falling")
+				elseif not landed and hit.Anchored then
+					landed = true
+					Vfx.burst("impact", drop.Position - Vector3.new(0, drop.Size.Y / 2, 0), drop.Color)
 				end
 			end)
 			drop.Parent = Arena.folder()
@@ -137,8 +144,8 @@ function Threats.shrink(ctx: Ctx): () -> ()
 			task.wait(1.5)
 			for _, t in Arena.tiles() do
 				if t:GetAttribute("Ring") == ring and t.Parent then
-					t.Transparency = 1
 					t.CanCollide = false
+					TweenService:Create(t, TweenInfo.new(0.5), { Transparency = 1 }):Play()
 				end
 			end
 		end
@@ -159,6 +166,7 @@ function Threats.chaser(ctx: Ctx): () -> ()
 		c.Anchored = true
 		c.CanCollide = false
 		c.Position = Vector3.new((i % 2 * 2 - 1) * Arena.Size / 2, Arena.FloorY + SIZE / 2 + 0.5, 0)
+		Vfx.attach(c, "smoke")
 		c.Parent = Arena.folder()
 		table.insert(chasers, c)
 	end
@@ -249,6 +257,15 @@ function Threats.darkness(_ctx: Ctx): () -> ()
 		FogEnd = Lighting.FogEnd,
 		FogColor = Lighting.FogColor,
 	}
+	-- При Atmosphere (её ставит Arena) туман не работает — сгущаем дымку.
+	local atmo = Lighting:FindFirstChildOfClass("Atmosphere")
+	local savedAtmo = atmo and { Density = atmo.Density, Color = atmo.Color, Decay = atmo.Decay, Haze = atmo.Haze }
+	if atmo then
+		atmo.Density = 0.7
+		atmo.Color = Color3.new(0, 0, 0)
+		atmo.Decay = Color3.new(0, 0, 0)
+		atmo.Haze = 0
+	end
 	Lighting.ClockTime = 0
 	Lighting.Brightness = 0
 	Lighting.Ambient = Color3.new(0, 0, 0)
@@ -269,6 +286,11 @@ function Threats.darkness(_ctx: Ctx): () -> ()
 	return function()
 		for k, v in saved do
 			(Lighting :: any)[k] = v
+		end
+		if atmo and savedAtmo then
+			for k, v in savedAtmo do
+				(atmo :: any)[k] = v
+			end
 		end
 		for _, light in lights do
 			light:Destroy()

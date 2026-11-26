@@ -11,6 +11,7 @@ local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 local player = Players.LocalPlayer
 
 local Voice = require(script.Voice)
+local Vfx = require(script.Vfx)
 
 -- UI ---------------------------------------------------------------
 local gui = Instance.new("ScreenGui")
@@ -165,3 +166,5 @@ wordBox.FocusLost:Connect(function(enter)
 		wordBox.Visible = false
 	end
 end)
+
+Remotes.Vfx.OnClientEvent:Connect(Vfx.play)
