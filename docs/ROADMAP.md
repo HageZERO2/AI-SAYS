@@ -13,14 +13,15 @@
 - [x] ИИ-ведущий: Text Generation API → JSON → валидация → резерв
 - [x] Голос ведущего (TTS) на клиенте
 - [x] Слово победителя: ввод, проверка, фильтр Roblox
-- [ ] **Проверить в Studio** имена бета-API: `TextGenerator`/`GenerateTextAsync`, `AudioTextToSpeech`/`VoiceId` (код в pcall, при ошибке пишет warn и работает на резерве)
+- [x] Имена бета-API сверены с API-дампом Roblox: `TextGenerator.GenerateTextAsync(request)`, `AudioTextToSpeech` (VoiceId — строка). Починен голос: у TTS нет `Stop()`, из-за этого ведущий молчал
+- [ ] **Проверить в Studio** живьём: отвечает ли ИИ (`ai=true`) и слышен ли голос
 - [ ] Тест на друзьях: смеётся ли кто-то в первые 3 минуты
 
 ## Неделя 2
 
 - [x] 3D-объект из слова (GenerationService) + кэш в памяти сервера; falling и chaser берут модель, если готова
 - [ ] Кэш слов в DataStore, 500 слов заранее
-- [ ] **Проверить в Studio** `GenerationService:GenerateMeshAsync` (имя и ответ — по памяти, код в pcall)
+- [ ] **Проверить в Studio** `GenerationService:GenerateMeshAsync`: сигнатура `(inputs, player, options)` сверена с API-дампом, при ответе-только-id догружаем через `LoadGeneratedMeshAsync`; форма ответа — проверить живьём
 - [ ] Генерация следующего раунда во время текущего (сейчас — в паузе, ~1–2 с)
 - [x] Цель collect: собрать 3 звезды (звёзд на всех не хватает)
 - [ ] Цели: столкнуть с платформы, спрятаться

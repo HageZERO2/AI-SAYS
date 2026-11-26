@@ -26,11 +26,19 @@ function Voice.say(text: string)
 	if not tts then
 		return
 	end
-	pcall(function()
-		local t = tts :: any
-		t:Stop()
-		t.Text = text
-		t:Play()
+	-- У AudioTextToSpeech нет Stop(): Pause + сброс позиции. LoadAsync ждёт синтеза, поэтому в отдельном потоке.
+	task.spawn(function()
+		local ok, err = pcall(function()
+			local t = tts :: any
+			t:Pause()
+			t.Text = text
+			t.TimePosition = 0
+			t:LoadAsync()
+			t:Play()
+		end)
+		if not ok then
+			warn("[Voice] не удалось сказать:", err)
+		end
 	end)
 end
 

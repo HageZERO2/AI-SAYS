@@ -1,7 +1,7 @@
 -- 3D-объект из слова (Cube 3D, GenerationService). Генерация идёт 20–40 с, поэтому:
 --   request(word, player) — запускаем, как только победитель выбрал слово;
 --   get(word)             — копия модели, если уже готова, иначе nil (угроза возьмёт шар с подписью).
--- API в бете: GenerateMeshAsync и его ответ сверять с create.roblox.com/docs/reference/engine/classes/GenerationService.
+-- Имена сверены с API-дампом Roblox (GenerateMeshAsync(inputs, player, options), LoadGeneratedMeshAsync(id)); форму ответа сверять с create.roblox.com/docs/reference/engine/classes/GenerationService.
 -- shortcut: кэш живёт только в памяти сервера; неделя 3 — сохранять ассеты слов в DataStore и сгенерировать 500 слов заранее.
 
 local ServerStorage = game:GetService("ServerStorage")
@@ -25,15 +25,21 @@ function ModelCache.request(word: string, player: Player?)
 	end
 	pending[word] = true
 	task.spawn(function()
-		local ok, _generationId, mesh = pcall(function()
+		local ok, generationId, mesh = pcall(function()
 			return (GenerationService :: any):GenerateMeshAsync({ Prompt = word }, player, {})
 		end)
+		-- Если вернулся только id, догружаем меш отдельно (LoadGeneratedMeshAsync есть в API).
+		if ok and typeof(mesh) ~= "Instance" and type(generationId) == "string" then
+			ok, mesh = pcall(function()
+				return (GenerationService :: any):LoadGeneratedMeshAsync(generationId)
+			end)
+		end
 		pending[word] = nil
 		if ok and typeof(mesh) == "Instance" and mesh:IsA("BasePart") then
 			mesh.Name = word
 			mesh.Parent = folder
 		else
-			warn("[ModelCache] не удалось сгенерировать", word, _generationId)
+			warn("[ModelCache] не удалось сгенерировать", word, generationId, mesh)
 		end
 	end)
 end

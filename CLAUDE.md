@@ -19,7 +19,7 @@ Roblox-игра «Саймон говорит» с ИИ-ведущим. Диза
 
 ## Открытые вопросы (проверить в Studio первым делом)
 
-- Бета-API написаны по памяти и обёрнуты в pcall: `TextGenerator:GenerateTextAsync` (AIHost), `AudioTextToSpeech` (client/Voice), `GenerationService:GenerateMeshAsync` (ModelCache). При `warn` в Output — сверить с create.roblox.com/docs и починить.
+- Имена бета-API сверены с API-дампом (github.com/MaximumADHD/Roblox-Client-Tracker, Mini-API-Dump.json), но живьём не проверены; всё в pcall: `TextGenerator:GenerateTextAsync` (AIHost), `AudioTextToSpeech` (client/Voice), `GenerationService:GenerateMeshAsync` (ModelCache). При `warn` в Output — сверить с create.roblox.com/docs и починить.
 - Сила ветра (`Threats.wind`, `* 70`) подобрана наугад.
 - `rojo plugin install` у владельца падает с os error 3 (Rojo не находит Studio) — плагин ставить из Creator Store.
 
