@@ -65,13 +65,33 @@ local function rgb(r: number, g: number, b: number): Color3
 	return Color3.fromRGB(r, g, b)
 end
 
--- Свет по умолчанию; тема может переопределить, каждая сборка сначала возвращает его.
+-- Свет по умолчанию (пресет stylised_day навыка roblox-map); тема может переопределить, каждая сборка сначала
+-- возвращает его. Lighting.Technology из скрипта не ставится — Future включается в Studio руками.
 local LIGHT = {
-	ClockTime = Lighting.ClockTime,
-	Brightness = Lighting.Brightness,
-	Ambient = Lighting.Ambient,
-	OutdoorAmbient = Lighting.OutdoorAmbient,
+	ClockTime = 10.5,
+	GeographicLatitude = 18,
+	Brightness = 2.4,
+	ExposureCompensation = 0.05,
+	EnvironmentDiffuseScale = 0.6,
+	EnvironmentSpecularScale = 0.35,
+	ShadowSoftness = 0.42,
+	GlobalShadows = true,
+	Ambient = rgb(58, 54, 48),
+	OutdoorAmbient = rgb(124, 122, 108),
+	ColorShift_Top = rgb(12, 10, 6), -- прибавляется к свету, не оттенок: больше — всё выбеливает
 }
+
+-- Atmosphere без Sky не действует: Sky нужен хотя бы один.
+local sky = Lighting:FindFirstChildOfClass("Sky") or Instance.new("Sky")
+sky.SunAngularSize = 13
+sky.MoonAngularSize = 11
+sky.Parent = Lighting
+local sunRays = Instance.new("SunRaysEffect")
+sunRays.Intensity = 0.05
+sunRays.Spread = 0.9
+sunRays.Parent = Lighting
+local clouds = Instance.new("Clouds")
+clouds.Parent = workspace.Terrain
 
 -- Дымка и постобработка: создаются один раз, тема меняет только цвета/плотность дымки.
 -- При Atmosphere туман Lighting.Fog* не работает — угроза darkness сгущает дымку сама.
@@ -93,6 +113,9 @@ type Theme = {
 	stands: Color3,
 	light: { [string]: any }?,
 	atmo: { Color: Color3, Decay: Color3, Density: number, Haze: number, Glare: number },
+	clouds: { Cover: number, Density: number, Color: Color3 }?, -- nil — облаков нет
+	accent: Color3, -- неон экрана ведущего
+	rim: Color3?, -- кромка по краю пола; nil — своя (у космоса неоновая)
 	decor: () -> (),
 }
 
@@ -102,7 +125,10 @@ local THEMES: { [string]: Theme } = {
 		tiles = { rgb(230, 230, 235), rgb(200, 205, 215) },
 		material = Enum.Material.SmoothPlastic,
 		stands = rgb(70, 80, 110),
-		atmo = { Color = rgb(200, 220, 255), Decay = rgb(110, 140, 190), Density = 0.3, Haze = 1, Glare = 0.3 },
+		atmo = { Color = rgb(200, 220, 255), Decay = rgb(110, 140, 190), Density = 0.14, Haze = 0.6, Glare = 0.2 },
+		clouds = { Cover = 0.55, Density = 0.5, Color = rgb(255, 255, 255) },
+		accent = rgb(80, 240, 255),
+		rim = rgb(70, 80, 110),
 		decor = function()
 			local board = deco({
 				Size = Vector3.new(54, 22, 1),
@@ -168,7 +194,10 @@ local THEMES: { [string]: Theme } = {
 		tiles = { rgb(245, 245, 245), rgb(40, 40, 45) },
 		material = Enum.Material.Marble,
 		stands = rgb(170, 70, 50),
-		atmo = { Color = rgb(255, 225, 190), Decay = rgb(200, 140, 90), Density = 0.32, Haze = 1.5, Glare = 0.5 },
+		atmo = { Color = rgb(255, 225, 190), Decay = rgb(200, 140, 90), Density = 0.16, Haze = 0.8, Glare = 0.3 },
+		clouds = { Cover = 0.45, Density = 0.45, Color = rgb(255, 240, 225) },
+		accent = rgb(255, 150, 50),
+		rim = rgb(170, 70, 50),
 		decor = function()
 			local fridge = deco({
 				Size = Vector3.new(24, 44, 14),
@@ -233,7 +262,10 @@ local THEMES: { [string]: Theme } = {
 		material = Enum.Material.SmoothPlastic,
 		stands = rgb(140, 90, 200),
 		light = { Ambient = rgb(150, 120, 140), OutdoorAmbient = rgb(170, 140, 160) },
-		atmo = { Color = rgb(255, 200, 230), Decay = rgb(220, 130, 200), Density = 0.35, Haze = 2, Glare = 0.6 },
+		atmo = { Color = rgb(255, 200, 230), Decay = rgb(220, 130, 200), Density = 0.18, Haze = 1, Glare = 0.4 },
+		clouds = { Cover = 0.6, Density = 0.55, Color = rgb(255, 215, 235) },
+		accent = rgb(255, 90, 170),
+		rim = rgb(230, 40, 90),
 		decor = function()
 			local colors =
 				{ rgb(255, 80, 120), rgb(90, 200, 255), rgb(255, 210, 60), rgb(130, 230, 120), rgb(200, 120, 255) }
@@ -300,7 +332,8 @@ local THEMES: { [string]: Theme } = {
 		material = Enum.Material.SmoothPlastic,
 		stands = rgb(60, 60, 90),
 		light = { ClockTime = 0, Ambient = rgb(140, 140, 170), OutdoorAmbient = rgb(140, 140, 170), Brightness = 2 },
-		atmo = { Color = rgb(90, 70, 160), Decay = rgb(40, 20, 90), Density = 0.25, Haze = 0.5, Glare = 0 },
+		atmo = { Color = rgb(40, 32, 90), Decay = rgb(14, 10, 40), Density = 0.2, Haze = 0.3, Glare = 0 }, -- тёмная: пустота под ареной — ночь, а не синий пол
+		accent = rgb(80, 240, 255),
 		decor = function()
 			local S = Arena.Size
 			for _, e in { { 0, -HALF, S, 0.4 }, { 0, HALF, S, 0.4 }, { -HALF, 0, 0.4, S }, { HALF, 0, 0.4, S } } do
@@ -357,7 +390,7 @@ local THEMES: { [string]: Theme } = {
 				12,
 				CFrame.new(-HALF - 26, TOP + 14, 4) * CFrame.Angles(math.rad(20), math.rad(60), math.rad(25))
 			)
-			prop("нло", 22, CFrame.new(26, TOP + 38, -HALF - 40) * CFrame.Angles(math.rad(10), 0, 0))
+			prop("нло", 22, CFrame.new(46, TOP + 34, -HALF - 40) * CFrame.Angles(math.rad(10), 0, 0))
 			prop(
 				"спутник",
 				14,
@@ -367,6 +400,89 @@ local THEMES: { [string]: Theme } = {
 	},
 }
 Arena.Themes = THEMES
+
+-- Ведущий над ареной: экран с лицом напротив трибун. Сам моргает; пока звучит фраза — «говорит» (Arena.hostSay).
+local EYE = UDim2.fromScale(0.14, 0.34)
+local MOUTH = UDim2.fromScale(0.3, 0.06)
+local host: { eyes: { Frame }, mouth: Frame }? = nil
+
+local function hostScreen(accent: Color3)
+	local cf = CFrame.new(0, TOP + 50, -HALF - 36) * CFrame.Angles(math.rad(14), 0, 0) -- чуть наклонён к арене
+	local screen = deco({ Name = "HostScreen", Size = Vector3.new(34, 20, 1.2), CFrame = cf, Color = rgb(18, 16, 30) })
+	deco({
+		Size = Vector3.new(36.5, 22.5, 1),
+		CFrame = cf * CFrame.new(0, 0, -0.3),
+		Color = accent,
+		Material = Enum.Material.Neon,
+	})
+	deco({
+		Size = Vector3.new(0.6, 6, 0.6),
+		CFrame = cf * CFrame.new(0, 14, 0),
+		Color = rgb(60, 60, 80),
+		Material = Enum.Material.Metal,
+	})
+	deco({
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.one * 2.2,
+		CFrame = cf * CFrame.new(0, 17.5, 0),
+		Color = accent,
+		Material = Enum.Material.Neon,
+	})
+	local gui = Instance.new("SurfaceGui")
+	gui.Face = Enum.NormalId.Back -- смотрит на арену (+Z)
+	gui.LightInfluence = 0
+	gui.Brightness = 2
+	gui.Parent = screen
+	local function blob(size: UDim2, pos: UDim2): Frame
+		local f = Instance.new("Frame")
+		f.AnchorPoint = Vector2.new(0.5, 0.5)
+		f.Size = size
+		f.Position = pos
+		f.BackgroundColor3 = accent
+		f.BorderSizePixel = 0
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(0.5, 0)
+		c.Parent = f
+		f.Parent = gui
+		return f
+	end
+	host = {
+		eyes = { blob(EYE, UDim2.fromScale(0.32, 0.4)), blob(EYE, UDim2.fromScale(0.68, 0.4)) },
+		mouth = blob(MOUTH, UDim2.fromScale(0.5, 0.76)),
+	}
+end
+
+-- Рот шевелится seconds секунд (RoundService зовёт на каждую фразу).
+function Arena.hostSay(seconds: number)
+	local h = host
+	if not h then
+		return
+	end
+	task.spawn(function()
+		local t0 = os.clock()
+		while os.clock() - t0 < seconds and host == h do
+			h.mouth.Size = UDim2.fromScale(0.3, 0.06 + math.random() * 0.16)
+			task.wait(0.12)
+		end
+		h.mouth.Size = MOUTH
+	end)
+end
+
+task.spawn(function() -- моргание
+	while true do
+		task.wait(2 + math.random() * 3)
+		local h = host
+		if h then
+			for _, e in h.eyes do
+				e.Size = UDim2.fromScale(0.14, 0.04)
+			end
+			task.wait(0.12)
+			for _, e in h.eyes do
+				e.Size = EYE
+			end
+		end
+	end
+end)
 
 -- name — тема из Config.Arenas (ИИ выбирает); неизвестная → school.
 function Arena.build(name: string?)
@@ -379,6 +495,10 @@ function Arena.build(name: string?)
 	end
 	for k, v in theme.atmo do
 		(atmosphere :: any)[k] = v
+	end
+	clouds.Enabled = theme.clouds ~= nil
+	for k, v in theme.clouds or {} do
+		(clouds :: any)[k] = v
 	end
 	folder = Instance.new("Folder")
 	folder.Name = "Arena"
@@ -398,14 +518,44 @@ function Arena.build(name: string?)
 			table.insert(tiles, t)
 		end
 	end
-	-- Трибуны для выбывших (твёрдые — на них стоят)
+	-- Трибуны для выбывших: три яруса по 2 стада (твёрдые — на них стоят), сзади перила, чтобы не упасть.
+	for i = 0, 2 do
+		local h = 1 + i * 2
+		part({
+			Name = "Stands",
+			Size = Vector3.new(Arena.Size, h, 6),
+			Position = Vector3.new(0, FLOOR_Y + 12.5 + i * 2 - h / 2, HALF + 9 + i * 6),
+			Color = theme.stands:Lerp(Color3.new(1, 1, 1), i * 0.08),
+			Parent = folder,
+		})
+	end
 	part({
-		Name = "Stands",
-		Size = Vector3.new(Arena.Size, 1, 16),
-		Position = Vector3.new(0, FLOOR_Y + 12, HALF + 14),
-		Color = theme.stands,
+		Name = "StandsRail",
+		Size = Vector3.new(Arena.Size, 4, 0.6),
+		Position = Vector3.new(0, FLOOR_Y + 18.5, HALF + 24.3),
+		Color = theme.stands:Lerp(Color3.new(0, 0, 0), 0.35),
+		Material = Enum.Material.Metal,
 		Parent = folder,
 	})
+	-- Кромка по краю пола: видно, где обрыв. Сквозь неё падают (декор).
+	if theme.rim then
+		local S = Arena.Size
+		for _, e in
+			{
+				{ 0, -HALF - 0.6, S + 2.4, 1.2 },
+				{ 0, HALF + 0.6, S + 2.4, 1.2 },
+				{ -HALF - 0.6, 0, 1.2, S },
+				{ HALF + 0.6, 0, 1.2, S },
+			}
+		do
+			deco({
+				Size = Vector3.new(e[3], 1.6, e[4]),
+				Position = Vector3.new(e[1], FLOOR_Y + 0.2, e[2]),
+				Color = theme.rim,
+			})
+		end
+	end
+	hostScreen(theme.accent)
 	theme.decor()
 	folder.Parent = workspace
 end

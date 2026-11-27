@@ -35,6 +35,7 @@ end
 -- voice: английская версия для TTS (nil — молча)
 local function announce(text: string, isAISays: boolean, voice: string?)
 	Remotes.Announce:FireAllClients(text, isAISays, voice)
+	Arena.hostSay(math.clamp(#(voice or text) / 14, 1.2, 6)) -- экран ведущего «говорит», пока звучит фраза
 end
 
 -- Ловушка: приказ БЕЗ «ИИ говорит». Кто подчинился — вылетает (что именно ловим — Services/Traps).
