@@ -55,6 +55,7 @@ src/
     Voice.luau                  озвучка ведущего (AudioTextToSpeech)
     Vfx.luau                    короткие эффекты по Remotes.Vfx (дым, искры, кольца, конфетти)
 tools/bake/                     запекание слов в ассеты (Studio → GLB → Open Cloud), см. README там
+assets/vfx/                     текстуры эффектов (навык roblox-vfx), загружены как Image → Config.VfxTex
 ```
 
 ### Цикл раунда

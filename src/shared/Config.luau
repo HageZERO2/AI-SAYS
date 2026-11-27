@@ -84,6 +84,17 @@ Config.Emotes = {
 	{ id = "laugh", icon = "😂", name = "Смех", price = 100, anim = "rbxassetid://507770818" },
 	{ id = "dance", icon = "💃", name = "Танец", price = 150, anim = "rbxassetid://507771019" },
 }
+-- Текстуры эффектов (assets/vfx, сгенерированы навыком roblox-vfx, загружены как Image). Белые: цвет задаёт эмиттер.
+-- *4x4 / *2x2 — флипбуки (FlipbookLayout Grid4x4 / Grid2x2).
+Config.VfxTex = {
+	ring = "rbxassetid://126959743286247", -- ring_cel_4x4: кольцо ударной волны, к концу рассыпается
+	flash = "rbxassetid://119233224670874", -- impact_star4_2x2: четыре вспышки-звезды
+	smoke = "rbxassetid://81790106899760", -- smoke_cel_4x4: мультяшный клуб дыма
+	dust = "rbxassetid://112595629690416", -- smoke_dust_4x4: пыль от удара
+	needle = "rbxassetid://127180862724640", -- spark_needle: искра-штрих (ориентация по скорости)
+	fire = "rbxassetid://140288044606463", -- fire_cel_4x4: язык пламени
+	star = "rbxassetid://107072414304251", -- spark_star4: блеск
+}
 Config.CoinsPerRound = 10 -- монеты за пережитый раунд (VIP ×2)
 Config.CollectTarget = 3 -- сколько предметов собрать в цели collect
 Config.Push = {
