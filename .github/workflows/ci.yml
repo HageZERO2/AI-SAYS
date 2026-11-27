@@ -1,0 +1,18 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ok-nick/setup-aftman@v0.4.2
+      - name: Lint (selene)
+        run: selene src
+      - name: Format (stylua)
+        run: stylua --check src
+      - name: Build place (rojo)
+        run: rojo build default.project.json -o AI-SAYS.rbxl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AI-SAYS.rbxl
+          path: AI-SAYS.rbxl

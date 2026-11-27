@@ -1,0 +1,5 @@
+# Версии тулчейна. Установка: `aftman install` в корне репо.
+[tools]
+rojo = "rojo-rbx/rojo@7.7.1"
+selene = "Kampfkarren/selene@0.27.1"
+stylua = "JohnnyMorganz/StyLua@0.20.0"
