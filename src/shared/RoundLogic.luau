@@ -194,4 +194,22 @@ function RoundLogic.stem(word: string): string
 	return table.concat(parts, " ")
 end
 
+-- Следы за монеты: не куплен — купить (если хватает) и надеть; куплен — надеть/снять.
+-- owned — id через запятую (атрибут игрока не хранит таблицы). Нельзя купить — первым вернётся nil.
+function RoundLogic.buyTrail(
+	owned: string,
+	equipped: string?,
+	coins: number,
+	id: string,
+	price: number
+): (string?, string?, number)
+	if table.find(string.split(owned, ","), id) then
+		return owned, if equipped == id then nil else id, coins
+	end
+	if coins < price then
+		return nil, equipped, coins
+	end
+	return if owned == "" then id else `{owned},{id}`, id, coins - price
+end
+
 return RoundLogic

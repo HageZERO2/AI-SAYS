@@ -5,6 +5,7 @@
 --   SubmitWord C→S  (word: string)    — валидируется в WordService
 --   Push       C→S  ()                — толчок в цели push; цель выбирает сервер (Goals.push)
 --   Vfx        S→C  (kind, pos, color?) — короткий эффект, рисует client/Vfx (Services/Vfx.burst)
+--   BuyTrail   C→S  (id: string)      — купить/надеть/снять след за монеты (Services/Cosmetics)
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -25,6 +26,7 @@ local Remotes = {
 	SubmitWord = remote("SubmitWord"),
 	Push = remote("Push"),
 	Vfx = remote("Vfx"),
+	BuyTrail = remote("BuyTrail"),
 }
 
 folder.Parent = ReplicatedStorage

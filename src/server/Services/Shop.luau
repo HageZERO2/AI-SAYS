@@ -2,6 +2,7 @@
 --   Word      — своё слово в следующий раунд (WordService.addPaid)
 --   ExtraLife — один вылет не считается (атрибут ExtraLives, тратит Roster.eliminate)
 --   Shield    — охота на лидера тебя не выберет (атрибут Shields, тратит Twists.leader)
+--   Voice     — новый голос ведущего на всём сервере на Config.VoiceMinutes (атрибуты HostVoice/HostVoiceBy у workspace)
 --   VipPass   — геймпасс: атрибут VIP — монеты ×2, золотое имя, среди выживших слово даёт VIP
 -- ProcessReceipt: сначала записываем чек в данные игрока (Data.recordReceipt), потом выдаём — повтор того же чека
 -- от Roblox ничего не выдаст второй раз.
@@ -21,7 +22,28 @@ local function add(p: Player, attr: string)
 	p:SetAttribute(attr, (p:GetAttribute(attr) or 0) + 1)
 end
 
+-- Голос: случайный, не тот, что сейчас. Новая покупка перебивает старую и заново заводит таймер.
+local voiceToken = 0
+local function changeVoice(p: Player)
+	local current = workspace:GetAttribute("HostVoice") or Config.Voices[1]
+	local pick
+	repeat
+		pick = Config.Voices[math.random(2, #Config.Voices)]
+	until pick ~= current
+	voiceToken += 1
+	local token = voiceToken
+	workspace:SetAttribute("HostVoice", pick)
+	workspace:SetAttribute("HostVoiceBy", p.DisplayName)
+	task.delay(Config.VoiceMinutes * 60, function()
+		if voiceToken == token then
+			workspace:SetAttribute("HostVoice", nil)
+			workspace:SetAttribute("HostVoiceBy", nil)
+		end
+	end)
+end
+
 local GRANT: { [number]: (Player) -> () } = {
+	[Config.Shop.Voice] = changeVoice,
 	[Config.Shop.Word] = WordService.addPaid,
 	[Config.Shop.ExtraLife] = function(p)
 		add(p, "ExtraLives")

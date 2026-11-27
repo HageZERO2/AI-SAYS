@@ -75,36 +75,101 @@ shop.BackgroundTransparency = 1
 local list = Instance.new("UIListLayout")
 list.Padding = UDim.new(0, 6)
 list.Parent = shop
+local function button(text: string, gold: boolean, parent: Instance): TextButton
+	local b = Instance.new("TextButton")
+	b.Size = UDim2.fromOffset(170, 38)
+	b.BackgroundColor3 = if gold then Color3.fromRGB(255, 200, 60) else Color3.fromRGB(40, 40, 60)
+	b.BackgroundTransparency = 0.15
+	b.TextColor3 = if gold then Color3.fromRGB(40, 30, 0) else Color3.new(1, 1, 1)
+	b.Font = Enum.Font.FredokaOne
+	b.TextScaled = true
+	b.Text = text
+	Instance.new("UICorner").Parent = b
+	b.Parent = parent
+	return b
+end
 for _, item in
 	{
 		{ Config.Shop.Word, "✍ Моё слово", false },
 		{ Config.Shop.ExtraLife, "❤ Вторая жизнь", false },
 		{ Config.Shop.Shield, "🛡 Щит от охотника", false },
+		{ Config.Shop.Voice, "🔊 Голос ведущего", false },
 		{ Config.Shop.VipPass, "👑 VIP", true },
 	}
 do
 	local id, text, isPass = item[1], item[2], item[3]
 	if id ~= 0 then
-		local b = Instance.new("TextButton")
-		b.Size = UDim2.fromOffset(170, 38)
-		b.BackgroundColor3 = if isPass then Color3.fromRGB(255, 200, 60) else Color3.fromRGB(40, 40, 60)
-		b.BackgroundTransparency = 0.15
-		b.TextColor3 = if isPass then Color3.fromRGB(40, 30, 0) else Color3.new(1, 1, 1)
-		b.Font = Enum.Font.FredokaOne
-		b.TextScaled = true
-		b.Text = text
-		Instance.new("UICorner").Parent = b
-		b.Activated:Connect(function()
+		button(text, isPass, shop).Activated:Connect(function()
 			if isPass then
 				MarketplaceService:PromptGamePassPurchase(player, id)
 			else
 				MarketplaceService:PromptProductPurchase(player, id)
 			end
 		end)
-		b.Parent = shop
 	end
 end
+
+-- Следы за монеты: кнопка открывает список. Цену, монеты и покупку проверяет сервер (Remotes.BuyTrail).
+local trails = Instance.new("Frame")
+trails.Name = "Trails"
+trails.AnchorPoint = Vector2.new(1, 1)
+trails.Position = UDim2.new(1, -190, 1, -12)
+trails.Size = UDim2.fromOffset(170, 0)
+trails.AutomaticSize = Enum.AutomaticSize.Y
+trails.BackgroundTransparency = 1
+trails.Visible = false
+local trailList = Instance.new("UIListLayout")
+trailList.Padding = UDim.new(0, 6)
+trailList.Parent = trails
+local trailButtons: { [string]: TextButton } = {}
+for _, t in Config.Trails do
+	trailButtons[t.id] = button("", false, trails)
+	trailButtons[t.id].Activated:Connect(function()
+		Remotes.BuyTrail:FireServer(t.id)
+	end)
+end
+local function refreshTrails()
+	local owned = string.split(player:GetAttribute("Trails") or "", ",")
+	local coins = player:GetAttribute("Coins") or 0
+	for _, t in Config.Trails do
+		local b = trailButtons[t.id]
+		local has = table.find(owned, t.id) ~= nil
+		b.Text = if player:GetAttribute("Trail") == t.id
+			then `{t.name} ✓ снять`
+			elseif has then `{t.name}: надеть`
+			else `{t.name}: {t.price} монет`
+		b.BackgroundTransparency = if has or coins >= t.price then 0.15 else 0.6
+	end
+end
+for _, attr in { "Trails", "Trail", "Coins" } do
+	player:GetAttributeChangedSignal(attr):Connect(refreshTrails)
+end
+refreshTrails()
+trails.Parent = gui
+button("✨ Следы за монеты", false, shop).Activated:Connect(function()
+	trails.Visible = not trails.Visible
+end)
 shop.Parent = gui
+
+-- Купленный голос ведущего: все видят, кто сменил, и слышат новый голос сразу.
+local voiceBy = label({
+	Name = "VoiceBy",
+	AnchorPoint = Vector2.new(0.5, 0),
+	Position = UDim2.fromScale(0.5, 0.245),
+	Size = UDim2.fromScale(0.4, 0.035),
+	TextColor3 = Color3.fromRGB(255, 210, 60),
+	Text = "",
+})
+workspace:GetAttributeChangedSignal("HostVoiceBy"):Connect(function()
+	local by = workspace:GetAttribute("HostVoiceBy")
+	voiceBy.Text = if by then `🔊 голос ведущего выбрал {by}` else ""
+	if by then
+		Voice.say("Ahem. Do you like my new voice?")
+	end
+end)
+if workspace:GetAttribute("HostVoiceBy") then
+	voiceBy.Text = `🔊 голос ведущего выбрал {workspace:GetAttribute("HostVoiceBy")}`
+end
 
 gui.Parent = player:WaitForChild("PlayerGui")
 

@@ -40,6 +40,42 @@ Config.Shop = {
 	ExtraLife = 3736645937, -- developer product «Вторая жизнь»
 	Shield = 3736645950, -- developer product «Щит от охотника»
 	VipPass = 2100198687, -- game pass VIP
+	Voice = 3737001392, -- developer product «Голос ведущего» (99): новый голос на сервере на VoiceMinutes
+}
+Config.Voices = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11" } -- VoiceId TTS (англ.); первый — обычный
+Config.VoiceMinutes = 15
+-- Следы за монеты (Services/Cosmetics). id без запятых: купленные хранятся строкой "ice,fire".
+Config.Trails = {
+	{
+		id = "mint",
+		name = "Мята",
+		price = 25,
+		colors = { Color3.fromRGB(120, 255, 200), Color3.fromRGB(40, 160, 120) },
+	},
+	{
+		id = "ice",
+		name = "Лёд",
+		price = 50,
+		colors = { Color3.fromRGB(220, 250, 255), Color3.fromRGB(80, 170, 255) },
+	},
+	{
+		id = "fire",
+		name = "Огонь",
+		price = 100,
+		colors = { Color3.fromRGB(255, 230, 80), Color3.fromRGB(255, 60, 20) },
+	},
+	{
+		id = "rainbow",
+		name = "Радуга",
+		price = 199,
+		colors = {
+			Color3.fromRGB(255, 60, 60),
+			Color3.fromRGB(255, 200, 40),
+			Color3.fromRGB(60, 220, 90),
+			Color3.fromRGB(60, 140, 255),
+			Color3.fromRGB(190, 80, 255),
+		},
+	},
 }
 Config.CoinsPerRound = 10 -- монеты за пережитый раунд (VIP ×2)
 Config.CollectTarget = 3 -- сколько предметов собрать в цели collect

@@ -1,4 +1,4 @@
--- Сохранение монет и побед (атрибуты Coins/Wins игрока ↔ DataStore) и чеков покупок.
+-- Сохранение монет, побед и следов (атрибуты Coins/Wins/Trails/Trail игрока ↔ DataStore) и чеков покупок.
 -- Замок сессии: запись {Lock = {Job, Time}} — данные пишет только сервер, который их загрузил.
 -- Не загрузились (нет доступа к DataStore, сбой) — играем с нулями и НЕ сохраняем, чтобы не затереть настоящие данные.
 
@@ -12,7 +12,14 @@ local LOCK_TTL = 15 * 60 -- сек: замок упавшего сервера �
 local AUTOSAVE = 60
 local KEEP_RECEIPTS = 50 -- последние чеки покупок (защита от двойной выдачи)
 
-type Record = { Coins: number, Wins: number, Receipts: { string }, Lock: { Job: string, Time: number }? }
+type Record = {
+	Coins: number,
+	Wins: number,
+	Receipts: { string },
+	Trails: string?,
+	Trail: string?,
+	Lock: { Job: string, Time: number }?,
+}
 
 local loaded: { [Player]: Record } = {}
 
@@ -59,6 +66,8 @@ local function save(p: Player, release: boolean, receipt: string?): boolean
 		local rec = old or { Coins = 0, Wins = 0, Receipts = {} }
 		rec.Coins = p:GetAttribute("Coins") or rec.Coins
 		rec.Wins = p:GetAttribute("Wins") or rec.Wins
+		rec.Trails = p:GetAttribute("Trails") or rec.Trails
+		rec.Trail = p:GetAttribute("Trail") -- nil — снят
 		if receipt and not table.find(rec.Receipts, receipt) then
 			table.insert(rec.Receipts, receipt)
 			while #rec.Receipts > KEEP_RECEIPTS do
@@ -125,6 +134,8 @@ local function onJoin(p: Player)
 	loaded[p] = rec
 	p:SetAttribute("Coins", rec.Coins)
 	p:SetAttribute("Wins", rec.Wins)
+	p:SetAttribute("Trails", rec.Trails)
+	p:SetAttribute("Trail", rec.Trail)
 end
 
 function Data.init()

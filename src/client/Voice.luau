@@ -3,13 +3,14 @@
 
 local Voice = {}
 
-local VOICE_ID = "1" -- 10 голосов; смена голоса — платная фишка (см. docs/DESIGN.md)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
 
 local tts: Instance?
 local warned = false
 local ok = pcall(function()
 	local t: any = Instance.new("AudioTextToSpeech" :: any)
-	t.VoiceId = VOICE_ID
+	t.VoiceId = Config.Voices[1]
 	local out = Instance.new("AudioDeviceOutput" :: any)
 	local wire = Instance.new("Wire")
 	wire.SourceInstance = t
@@ -32,6 +33,7 @@ function Voice.say(text: string)
 		local said, err = pcall(function()
 			local t = tts :: any
 			t:Pause()
+			t.VoiceId = workspace:GetAttribute("HostVoice") or Config.Voices[1] -- купленный голос (Shop)
 			t.Text = text
 			t.TimePosition = 0
 			if t:LoadAsync() ~= Enum.AssetFetchStatus.Success then

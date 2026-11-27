@@ -12,5 +12,6 @@ require(Services.Remotes) -- создать RemoteEvent до того, как к
 require(Services.Arena).build()
 require(Services.Data).init()
 require(Services.Shop).init()
+require(Services.Cosmetics).init()
 require(Services.Players).init()
 require(Services.RoundService).run()

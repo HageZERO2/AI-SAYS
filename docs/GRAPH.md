@@ -20,6 +20,7 @@ graph LR
     Players["Players (Roster)"]
     Arena
     WordService
+    Cosmetics
     ModelCache
     Remotes
   end
@@ -28,7 +29,7 @@ graph LR
     Voice
   end
 
-  init --> Remotes & Arena & Data & Shop & Players & RoundService
+  init --> Remotes & Arena & Data & Shop & Cosmetics & Players & RoundService
   init -. только Studio .-> Spec
   Spec --> RoundLogic & Config & Goals & Threats
   RoundService --> AIHost & Goals & Threats & Traps & Twists & Players & Arena & WordService & ModelCache & Remotes & Config
@@ -39,12 +40,14 @@ graph LR
   Twists --> Arena & Players
   Traps --> Arena & Players
   Shop --> Data & WordService & Config
+  Cosmetics --> RoundLogic & Config & Remotes
   Players & Threats & Goals & Twists & RoundService --> Vfx
   Vfx --> Remotes
   ModelCache --> WordBank
   Players --> Arena
   RoundLogic --> Config
   initc --> Voice & Config
+  Voice --> Config
 ```
 
 Правило: `Shared` не знает о сервере и клиенте; `Players`/`Arena` — нижний слой сервера, их требуют все, они — никого, кроме друг друга.
@@ -59,6 +62,7 @@ graph LR
   C -- "SubmitWord(word) → cleanWord + TextService-фильтр" --> WS
   VX[Vfx] -- "Vfx(kind, pos, color?) — короткий эффект" --> C
   C -- "Push() — цель push; кого толкнуть, решает сервер (ближайший, кулдаун)" --> G[Goals.push]
+  C -- "BuyTrail(id) — купить/надеть/снять след; монеты проверяет сервер" --> CO[Cosmetics]
 ```
 
 ## Один раунд
