@@ -79,10 +79,10 @@ Config.Trails = {
 }
 -- Эмоция победителя: играет у выживших в конце раунда. Анимации R15 от Roblox (доступны любой игре).
 Config.Emotes = {
-	{ id = "wave", name = "Привет", price = 25, anim = "rbxassetid://507770239" },
-	{ id = "cheer", name = "Ура", price = 50, anim = "rbxassetid://507770677" },
-	{ id = "laugh", name = "Смех", price = 100, anim = "rbxassetid://507770818" },
-	{ id = "dance", name = "Танец", price = 150, anim = "rbxassetid://507771019" },
+	{ id = "wave", icon = "👋", name = "Привет", price = 25, anim = "rbxassetid://507770239" },
+	{ id = "cheer", icon = "🙌", name = "Ура", price = 50, anim = "rbxassetid://507770677" },
+	{ id = "laugh", icon = "😂", name = "Смех", price = 100, anim = "rbxassetid://507770818" },
+	{ id = "dance", icon = "💃", name = "Танец", price = 150, anim = "rbxassetid://507771019" },
 }
 Config.CoinsPerRound = 10 -- монеты за пережитый раунд (VIP ×2)
 Config.CollectTarget = 3 -- сколько предметов собрать в цели collect

@@ -27,6 +27,7 @@ graph LR
   subgraph Client["StarterPlayerScripts.Client"]
     initc["init.client (HUD)"]
     Voice
+    Ui
   end
 
   init --> Remotes & Arena & Data & Shop & Cosmetics & Players & RoundService
@@ -46,7 +47,7 @@ graph LR
   ModelCache --> WordBank
   Players --> Arena
   RoundLogic --> Config
-  initc --> Voice & Config
+  initc --> Voice & Ui & Config
   Voice --> Config
 ```
 

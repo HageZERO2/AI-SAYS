@@ -50,7 +50,8 @@ src/
     WordBank.luau               500 запечённых слов: слово → assetId модели или { pack, part } (делает tools/bake)
     Tests/RoundLogic.spec.luau  самопроверка, запускается при Play в Studio
   client/                       → StarterPlayerScripts.Client
-    init.client.luau            HUD, ввод слова
+    init.client.luau            HUD, окна магазина/косметики/слова
+    Ui.luau                     кит интерфейса: тема, тень+градиент+обводка, холст 1280×720 под любой экран
     Voice.luau                  озвучка ведущего (AudioTextToSpeech)
     Vfx.luau                    короткие эффекты по Remotes.Vfx (дым, искры, кольца, конфетти)
 tools/bake/                     запекание слов в ассеты (Studio → GLB → Open Cloud), см. README там
