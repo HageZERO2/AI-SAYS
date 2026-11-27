@@ -109,45 +109,63 @@ do
 	end
 end
 
--- Следы за монеты: кнопка открывает список. Цену, монеты и покупку проверяет сервер (Remotes.BuyTrail).
-local trails = Instance.new("Frame")
-trails.Name = "Trails"
-trails.AnchorPoint = Vector2.new(1, 1)
-trails.Position = UDim2.new(1, -190, 1, -12)
-trails.Size = UDim2.fromOffset(170, 0)
-trails.AutomaticSize = Enum.AutomaticSize.Y
-trails.BackgroundTransparency = 1
-trails.Visible = false
-local trailList = Instance.new("UIListLayout")
-trailList.Padding = UDim.new(0, 6)
-trailList.Parent = trails
-local trailButtons: { [string]: TextButton } = {}
-for _, t in Config.Trails do
-	trailButtons[t.id] = button("", false, trails)
-	trailButtons[t.id].Activated:Connect(function()
-		Remotes.BuyTrail:FireServer(t.id)
+-- Косметика за монеты: кнопка открывает список следов и эмоций победителя.
+-- Цену, монеты и покупку проверяет сервер (Remotes.BuyCosmetic).
+local cosmetics = Instance.new("Frame")
+cosmetics.Name = "Cosmetics"
+cosmetics.AnchorPoint = Vector2.new(1, 1)
+cosmetics.Position = UDim2.new(1, -190, 1, -12)
+cosmetics.Size = UDim2.fromOffset(170, 0)
+cosmetics.AutomaticSize = Enum.AutomaticSize.Y
+cosmetics.BackgroundTransparency = 1
+cosmetics.Visible = false
+local cosmeticList = Instance.new("UIListLayout")
+cosmeticList.Padding = UDim.new(0, 6)
+cosmeticList.SortOrder = Enum.SortOrder.LayoutOrder
+cosmeticList.Parent = cosmetics
+local refreshers: { () -> () } = {}
+for _, kind in
+	{
+		{ kind = "Trail", owned = "Trails", list = Config.Trails, title = "✨ Следы" },
+		{ kind = "Emote", owned = "Emotes", list = Config.Emotes, title = "🎉 Эмоция победителя" },
+	}
+do
+	local title = label({ Size = UDim2.fromOffset(170, 26), LayoutOrder = #cosmetics:GetChildren(), Text = kind.title })
+	title.Parent = cosmetics
+	local buttons: { [string]: TextButton } = {}
+	for _, t in kind.list do
+		local b = button("", false, cosmetics)
+		b.LayoutOrder = #cosmetics:GetChildren()
+		b.Activated:Connect(function()
+			Remotes.BuyCosmetic:FireServer(kind.kind, t.id)
+		end)
+		buttons[t.id] = b
+	end
+	table.insert(refreshers, function()
+		local owned = string.split(player:GetAttribute(kind.owned) or "", ",")
+		local coins = player:GetAttribute("Coins") or 0
+		for _, t in kind.list do
+			local has = table.find(owned, t.id) ~= nil
+			buttons[t.id].Text = if player:GetAttribute(kind.kind) == t.id
+				then `{t.name} ✓ снять`
+				elseif has then `{t.name}: надеть`
+				else `{t.name}: {t.price} монет`
+			buttons[t.id].BackgroundTransparency = if has or coins >= t.price then 0.15 else 0.6
+		end
 	end)
 end
-local function refreshTrails()
-	local owned = string.split(player:GetAttribute("Trails") or "", ",")
-	local coins = player:GetAttribute("Coins") or 0
-	for _, t in Config.Trails do
-		local b = trailButtons[t.id]
-		local has = table.find(owned, t.id) ~= nil
-		b.Text = if player:GetAttribute("Trail") == t.id
-			then `{t.name} ✓ снять`
-			elseif has then `{t.name}: надеть`
-			else `{t.name}: {t.price} монет`
-		b.BackgroundTransparency = if has or coins >= t.price then 0.15 else 0.6
+local function refreshCosmetics()
+	for _, f in refreshers do
+		f()
 	end
 end
-for _, attr in { "Trails", "Trail", "Coins" } do
-	player:GetAttributeChangedSignal(attr):Connect(refreshTrails)
+for _, attr in { "Trails", "Trail", "Emotes", "Emote", "Coins" } do
+	player:GetAttributeChangedSignal(attr):Connect(refreshCosmetics)
 end
-refreshTrails()
-trails.Parent = gui
-button("✨ Следы за монеты", false, shop).Activated:Connect(function()
-	trails.Visible = not trails.Visible
+refreshCosmetics()
+cosmetics.Parent = gui
+button("✨ Косметика за монеты", false, shop).Activated:Connect(function()
+	cosmetics.Visible = not cosmetics.Visible
 end)
 shop.Parent = gui
 

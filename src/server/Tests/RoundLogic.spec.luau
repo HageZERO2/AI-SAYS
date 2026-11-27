@@ -117,18 +117,21 @@ return function()
 		assert(WordBank[word], "DefaultWords not baked: " .. word)
 	end
 
-	-- следы: покупка списывает монеты, повторный клик снимает, без монет нельзя
-	local owned, eq, coins = RoundLogic.buyTrail("", nil, 60, "ice", 50)
+	-- косметика: покупка списывает монеты, повторный клик снимает, без монет нельзя
+	local owned, eq, coins = RoundLogic.buyItem("", nil, 60, "ice", 50)
 	assert(owned == "ice" and eq == "ice" and coins == 10, "buy trail")
-	owned, eq, coins = RoundLogic.buyTrail("ice", "ice", 10, "ice", 50)
+	owned, eq, coins = RoundLogic.buyItem("ice", "ice", 10, "ice", 50)
 	assert(owned == "ice" and eq == nil and coins == 10, "unequip trail is free")
-	assert(RoundLogic.buyTrail("ice", nil, 10, "fire", 100) == nil, "no coins → no trail")
-	owned = RoundLogic.buyTrail("mint", nil, 100, "fire", 100)
+	assert(RoundLogic.buyItem("ice", nil, 10, "fire", 100) == nil, "no coins → no trail")
+	owned = RoundLogic.buyItem("mint", nil, 100, "fire", 100)
 	assert(owned == "mint,fire", "owned list grows")
-	local seen = {}
-	for _, t in Config.Trails do
-		assert(not seen[t.id] and not string.find(t.id, ",") and t.price > 0 and #t.colors >= 2, "bad trail " .. t.id)
-		seen[t.id] = true
+	for _, list in { Config.Trails, Config.Emotes } do
+		local seen = {}
+		for _, t in list do
+			assert(not seen[t.id] and not string.find(t.id, ",") and t.price > 0, "bad cosmetic " .. t.id)
+			assert(if t.colors then #t.colors >= 2 else string.find(t.anim, "^rbxassetid://%d+$"), "bad look " .. t.id)
+			seen[t.id] = true
+		end
 	end
 
 	print("[Tests] RoundLogic OK")

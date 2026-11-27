@@ -32,7 +32,7 @@ graph LR
   init --> Remotes & Arena & Data & Shop & Cosmetics & Players & RoundService
   init -. только Studio .-> Spec
   Spec --> RoundLogic & Config & Goals & Threats
-  RoundService --> AIHost & Goals & Threats & Traps & Twists & Players & Arena & WordService & ModelCache & Remotes & Config
+  RoundService --> AIHost & Cosmetics & Goals & Threats & Traps & Twists & Players & Arena & WordService & ModelCache & Remotes & Config
   AIHost --> RoundLogic & Config
   WordService --> RoundLogic & Config & Remotes
   Goals --> Arena & Players & Config & Remotes
@@ -62,7 +62,7 @@ graph LR
   C -- "SubmitWord(word) → cleanWord + TextService-фильтр" --> WS
   VX[Vfx] -- "Vfx(kind, pos, color?) — короткий эффект" --> C
   C -- "Push() — цель push; кого толкнуть, решает сервер (ближайший, кулдаун)" --> G[Goals.push]
-  C -- "BuyTrail(id) — купить/надеть/снять след; монеты проверяет сервер" --> CO[Cosmetics]
+  C -- "BuyCosmetic(kind, id) — купить/надеть/снять след или эмоцию; монеты проверяет сервер" --> CO[Cosmetics]
 ```
 
 ## Один раунд

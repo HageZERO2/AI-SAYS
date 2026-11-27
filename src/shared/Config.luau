@@ -44,7 +44,7 @@ Config.Shop = {
 }
 Config.Voices = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11" } -- VoiceId TTS (англ.); первый — обычный
 Config.VoiceMinutes = 15
--- Следы за монеты (Services/Cosmetics). id без запятых: купленные хранятся строкой "ice,fire".
+-- Косметика за монеты (Services/Cosmetics). id без запятых: купленные хранятся строкой "ice,fire".
 Config.Trails = {
 	{
 		id = "mint",
@@ -76,6 +76,13 @@ Config.Trails = {
 			Color3.fromRGB(190, 80, 255),
 		},
 	},
+}
+-- Эмоция победителя: играет у выживших в конце раунда. Анимации R15 от Roblox (доступны любой игре).
+Config.Emotes = {
+	{ id = "wave", name = "Привет", price = 25, anim = "rbxassetid://507770239" },
+	{ id = "cheer", name = "Ура", price = 50, anim = "rbxassetid://507770677" },
+	{ id = "laugh", name = "Смех", price = 100, anim = "rbxassetid://507770818" },
+	{ id = "dance", name = "Танец", price = 150, anim = "rbxassetid://507771019" },
 }
 Config.CoinsPerRound = 10 -- монеты за пережитый раунд (VIP ×2)
 Config.CollectTarget = 3 -- сколько предметов собрать в цели collect

@@ -1,4 +1,4 @@
--- Сохранение монет, побед и следов (атрибуты Coins/Wins/Trails/Trail игрока ↔ DataStore) и чеков покупок.
+-- Сохранение монет, побед и косметики (атрибуты Coins/Wins/Trails/Trail/Emotes/Emote ↔ DataStore) и чеков покупок.
 -- Замок сессии: запись {Lock = {Job, Time}} — данные пишет только сервер, который их загрузил.
 -- Не загрузились (нет доступа к DataStore, сбой) — играем с нулями и НЕ сохраняем, чтобы не затереть настоящие данные.
 
@@ -18,6 +18,8 @@ type Record = {
 	Receipts: { string },
 	Trails: string?,
 	Trail: string?,
+	Emotes: string?,
+	Emote: string?,
 	Lock: { Job: string, Time: number }?,
 }
 
@@ -68,6 +70,8 @@ local function save(p: Player, release: boolean, receipt: string?): boolean
 		rec.Wins = p:GetAttribute("Wins") or rec.Wins
 		rec.Trails = p:GetAttribute("Trails") or rec.Trails
 		rec.Trail = p:GetAttribute("Trail") -- nil — снят
+		rec.Emotes = p:GetAttribute("Emotes") or rec.Emotes
+		rec.Emote = p:GetAttribute("Emote")
 		if receipt and not table.find(rec.Receipts, receipt) then
 			table.insert(rec.Receipts, receipt)
 			while #rec.Receipts > KEEP_RECEIPTS do
@@ -136,6 +140,8 @@ local function onJoin(p: Player)
 	p:SetAttribute("Wins", rec.Wins)
 	p:SetAttribute("Trails", rec.Trails)
 	p:SetAttribute("Trail", rec.Trail)
+	p:SetAttribute("Emotes", rec.Emotes)
+	p:SetAttribute("Emote", rec.Emote)
 end
 
 function Data.init()

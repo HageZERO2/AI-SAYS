@@ -7,6 +7,7 @@ local Config = require(ReplicatedStorage.Shared.Config)
 local RoundLogic = require(ReplicatedStorage.Shared.RoundLogic)
 local AIHost = require(script.Parent.AIHost)
 local Arena = require(script.Parent.Arena)
+local Cosmetics = require(script.Parent.Cosmetics)
 local Goals = require(script.Parent.Goals)
 local ModelCache = require(script.Parent.ModelCache)
 local Remotes = require(script.Parent.Remotes)
@@ -116,6 +117,7 @@ local function playRound(word: string, duration: number, round: RoundLogic.Round
 		if r then
 			Vfx.burst("confetti", r.Position + Vector3.new(0, 3, 0))
 		end
+		Cosmetics.celebrate(p)
 	end
 	streak = if #survivors > 0 then streak + 1 else 0
 	if #survivors == 0 then

@@ -45,7 +45,7 @@ src/
       WordService.luau          слово победителя: проверка, фильтр Roblox
       Data.luau                 сохранение монет/побед (DataStore + замок сессии), чеки покупок
       Shop.luau                 покупки за Robux: слово, вторая жизнь, щит, голос ведущего, VIP (ID в Config.Shop)
-      Cosmetics.luau            следы за монеты (Remotes.BuyTrail, Config.Trails)
+      Cosmetics.luau            косметика за монеты: следы и эмоция победителя (Remotes.BuyCosmetic, Config.Trails/Emotes)
       Remotes.luau              список всех RemoteEvent и их аргументов
     WordBank.luau               500 запечённых слов: слово → assetId модели или { pack, part } (делает tools/bake)
     Tests/RoundLogic.spec.luau  самопроверка, запускается при Play в Studio

@@ -194,9 +194,9 @@ function RoundLogic.stem(word: string): string
 	return table.concat(parts, " ")
 end
 
--- Следы за монеты: не куплен — купить (если хватает) и надеть; куплен — надеть/снять.
+-- Косметика за монеты (следы, эмоции): не куплен — купить (если хватает) и надеть; куплен — надеть/снять.
 -- owned — id через запятую (атрибут игрока не хранит таблицы). Нельзя купить — первым вернётся nil.
-function RoundLogic.buyTrail(
+function RoundLogic.buyItem(
 	owned: string,
 	equipped: string?,
 	coins: number,
